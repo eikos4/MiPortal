@@ -277,8 +277,8 @@ def registrar():
 
 
 
-@negocios_bp.route("/categoria/<int:id>", endpoint="por_categoria_simple")
-def negocios_por_categoria_simple(id):
+@negocios_bp.route("/categoria/<int:id>", endpoint="por_categoria")
+def negocios_por_categoria(id):
     categoria = Categoria.query.get_or_404(id)
     negocios = PerfilEmpresa.query.filter_by(categoria_id=id).all()
     return render_template("negocios/por_categoria.html", categoria=categoria, negocios=negocios)
