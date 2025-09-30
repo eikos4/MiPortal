@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="relative bg-gradient-to-r from-blue-900 to-purple-900 text-white py-16">
+  <div class="max-w-4xl mx-auto px-6 text-center">
+    <h1 class="text-4xl md:text-5xl font-extrabold mb-4">
+      {{ noticia.titulo }}
+    </h1>
+    <p class="text-gray-200">
+      🗓 {{ noticia.fecha.strftime("%d/%m/%Y") }}
+    </p>
+  </div>
+</section>
+
+<section class="max-w-4xl mx-auto px-6 py-12 bg-white -mt-10 relative z-10 rounded-xl shadow-lg">
+  {% if noticia.imagen %}
+    <img src="{{ url_for('static', filename=noticia.imagen) }}"
+         alt="{{ noticia.titulo }}"
+         class="w-full h-80 object-cover rounded-lg mb-8 shadow">
+  {% endif %}
+
+  <article class="prose max-w-none text-gray-800">
+    {{ noticia.contenido | safe }}
+  </article>
+
+  <div class="mt-10 flex justify-between items-center">
+    <a href="{{ url_for('inicio.noticias') }}"
+       class="text-blue-600 font-semibold hover:underline">
+      ← Volver a Noticias
+    </a>
+  </div>
+</section>
+
+<!-- CTA para invitar -->
+<section class="bg-gradient-to-r from-blue-600 to-purple-700 text-white py-12 mt-16">
+  <div class="max-w-4xl mx-auto text-center px-6">
+    <h2 class="text-2xl md:text-3xl font-bold mb-4">📢 ¿Quieres publicar una noticia?</h2>
+    <p class="mb-6 text-blue-100">
+      Difunde comunicados, novedades o lanzamientos en la plataforma y llega a toda la comunidad.
+    </p>
+    <a href="{{ url_for('auth.login') }}"
+       class="bg-yellow-400 text-gray-900 px-6 py-3 rounded-lg font-semibold shadow hover:bg-yellow-300 transition">
+      Publicar mi noticia
+    </a>
+  </div>
+</section>
+{% endblock %}

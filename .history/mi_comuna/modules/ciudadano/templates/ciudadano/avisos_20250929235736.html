@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="py-12 bg-gray-50 min-h-screen">
+  <div class="max-w-5xl mx-auto px-6">
+
+    <!-- Título -->
+    <h1 class="text-3xl font-extrabold text-gray-900 mb-10 text-center">
+      📢 Gestión de Avisos
+    </h1>
+
+    <!-- Formulario -->
+    <div class="bg-white shadow-md rounded-2xl p-8 mb-12 border border-gray-200">
+      <h2 class="text-xl font-bold text-gray-800 mb-6">➕ Publicar nuevo aviso</h2>
+      <form method="POST" enctype="multipart/form-data" class="space-y-6">
+        {{ form.hidden_tag() }}
+
+        <!-- Título -->
+        <div>
+          {{ form.titulo.label(class="block text-sm font-semibold text-gray-700 mb-1") }}
+          {{ form.titulo(class="w-full rounded-lg border border-gray-300 px-4 py-2 focus:ring-2 focus:ring-blue-500") }}
+          {% for error in form.titulo.errors %}
+            <p class="text-red-500 text-sm mt-1">{{ error }}</p>
+          {% endfor %}
+        </div>
+
+        <!-- Descripción -->
+        <div>
+          {{ form.descripcion.label(class="block text-sm font-semibold text-gray-700 mb-1") }}
+          {{ form.descripcion(class="w-full rounded-lg border border-gray-300 px-4 py-2 focus:ring-2 focus:ring-blue-500", rows="3") }}
+          {% for error in form.descripcion.errors %}
+            <p class="text-red-500 text-sm mt-1">{{ error }}</p>
+          {% endfor %}
+        </div>
+
+        <!-- Imagen -->
+        <div>
+          {{ form.imagen.label(class="block text-sm font-semibold text-gray-700 mb-1") }}
+          {{ form.imagen(class="block w-full text-sm text-gray-600 file:mr-4 file:py-2 file:px-4
+                                file:rounded-lg file:border-0
+                                file:text-sm file:font-semibold
+                                file:bg-blue-600 file:text-white
+                                hover:file:bg-blue-700 cursor-pointer") }}
+        </div>
+
+        <!-- Botón -->
+        <div class="text-right">
+          {{ form.submit(class="px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg shadow transition") }}
+        </div>
+      </form>
+    </div>
+
+    <!-- Listado de Avisos -->
+    <div>
+      <h2 class="text-xl font-bold text-gray-800 mb-6">📋 Mis Avisos Publicados</h2>
+
+      {% if avisos %}
+        <div class="grid gap-8 md:grid-cols-2">
+          {% for aviso in avisos %}
+            <div class="bg-white shadow-md rounded-xl p-6 hover:shadow-lg transition border border-gray-200">
+              <!-- Imagen -->
+              {% if aviso.imagen %}
+                <img src="{{ url_for('static', filename=aviso.imagen) }}" 
+                     alt="{{ aviso.titulo }}" 
+                     class="w-full h-44 object-cover rounded-lg mb-4 shadow">
+              {% endif %}
+
+              <!-- Contenido -->
+              <h3 class="text-lg font-bold text-gray-900">{{ aviso.titulo }}</h3>
+              <p class="text-gray-600 text-sm mt-2">{{ aviso.descripcion }}</p>
+
+              <p class="text-xs text-gray-400 mt-3">
+                📅 Publicado: {{ aviso.creado_en.strftime("%d/%m/%Y") if aviso.creado_en else "Sin fecha" }}
+              </p>
+            </div>
+          {% endfor %}
+        </div>
+      {% else %}
+        <p class="text-gray-500 italic">⚠️ Aún no has publicado avisos.</p>
+      {% endif %}
+    </div>
+
+  </div>
+</section>
+{% endblock %}

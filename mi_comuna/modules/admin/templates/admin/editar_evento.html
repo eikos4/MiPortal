@@ -1,0 +1,54 @@
+{% extends "admin/base_admin.html" %}
+
+{% block header %}✏️ Editar Evento{% endblock %}
+
+{% block content %}
+<section class="max-w-3xl mx-auto space-y-6">
+  <!-- Título -->
+  <div class="flex justify-between items-center">
+    <h1 class="text-2xl font-bold text-gray-800">Editar evento</h1>
+    <a href="{{ url_for('admin.admin_eventos') }}"
+       class="text-sm text-blue-600 hover:underline">← Volver a eventos</a>
+  </div>
+
+  <!-- Formulario -->
+  <form method="POST" class="bg-white shadow rounded-lg p-6 space-y-5">
+    <!-- Título -->
+    <div>
+      <label for="titulo" class="block text-sm font-semibold text-gray-700">Título</label>
+      <input type="text" id="titulo" name="titulo" value="{{ evento.titulo }}"
+             required
+             class="mt-1 w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 text-sm">
+    </div>
+
+    <!-- Lugar -->
+    <div>
+      <label for="lugar" class="block text-sm font-semibold text-gray-700">Lugar</label>
+      <input type="text" id="lugar" name="lugar" value="{{ evento.lugar }}"
+             required
+             class="mt-1 w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 text-sm">
+    </div>
+
+    <!-- Fecha -->
+    <div>
+      <label for="fecha" class="block text-sm font-semibold text-gray-700">Fecha</label>
+      <input type="date" id="fecha" name="fecha"
+             value="{{ evento.fecha.strftime('%Y-%m-%d') if evento.fecha else '' }}"
+             required
+             class="mt-1 w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 text-sm">
+    </div>
+
+    <!-- Botones -->
+    <div class="flex justify-end gap-3">
+      <a href="{{ url_for('admin.admin_eventos') }}"
+         class="px-4 py-2 rounded-lg bg-gray-200 text-gray-800 hover:bg-gray-300">
+        Cancelar
+      </a>
+      <button type="submit"
+              class="px-4 py-2 rounded-lg bg-blue-600 text-white font-semibold hover:bg-blue-700 shadow">
+        💾 Guardar cambios
+      </button>
+    </div>
+  </form>
+</section>
+{% endblock %}

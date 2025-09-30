@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block content %}
+
+<section class="max-w-5xl mx-auto px-6 py-12">
+  <h1 class="text-3xl font-bold mb-6">📢 Ofertas de {{ perfil.nombre_comercial }}</h1>
+
+  <!-- Formulario -->
+  <div class="bg-white shadow rounded-xl p-6 mb-10">
+    <h2 class="text-xl font-semibold mb-4">➕ Crear nueva oferta</h2>
+    <form method="POST" enctype="multipart/form-data" class="space-y-4">
+      {{ form.hidden_tag() }}
+      <div>{{ form.titulo.label }} {{ form.titulo(class="w-full border rounded-lg p-2") }}</div>
+      <div>{{ form.descripcion.label }} {{ form.descripcion(class="w-full border rounded-lg p-2") }}</div>
+      <div>{{ form.imagen.label }} {{ form.imagen(class="w-full text-sm") }}</div>
+      <div class="grid grid-cols-2 gap-4">
+        <div>{{ form.fecha_inicio.label }} {{ form.fecha_inicio(class="w-full border rounded-lg p-2") }}</div>
+        <div>{{ form.fecha_fin.label }} {{ form.fecha_fin(class="w-full border rounded-lg p-2") }}</div>
+      </div>
+      <div>{{ form.submit(class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700") }}</div>
+    </form>
+  </div>
+
+  <!-- Listado -->
+  <div class="grid sm:grid-cols-2 md:grid-cols-3 gap-6">
+    {% for oferta in ofertas %}
+    <article class="bg-white rounded-xl shadow hover:shadow-lg overflow-hidden">
+      {% if oferta.imagen %}
+        <img src="{{ url_for('static', filename=oferta.imagen) }}" class="h-40 w-full object-cover" alt="{{ oferta.titulo }}">
+      {% endif %}
+      <div class="p-4">
+        <h3 class="text-lg font-bold">{{ oferta.titulo }}</h3>
+        <p class="text-gray-600 text-sm">{{ oferta.descripcion }}</p>
+        <p class="text-xs text-gray-500 mt-2">
+          Vigencia: {{ oferta.fecha_inicio.strftime('%d/%m/%Y') }} 
+          {% if oferta.fecha_fin %} - {{ oferta.fecha_fin.strftime('%d/%m/%Y') }}{% endif %}
+        </p>
+      </div>
+    </article>
+    {% else %}
+      <p class="text-gray-500 col-span-full text-center">No hay ofertas publicadas.</p>
+    {% endfor %}
+  </div>
+</section>
+
+{% endblock %}

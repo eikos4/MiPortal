@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Panel Admin – {{ config.SITE_NAME if config.SITE_NAME else "Mi Portal Parral" }}</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  {% block extra_head %}{% endblock %}
+</head>
+<body class="bg-gray-100 flex h-screen">
+
+  <!-- Sidebar -->
+  <aside class="w-64 bg-blue-900 text-white flex flex-col overflow-y-auto">
+    <!-- Logo / Usuario -->
+    <div class="p-6 text-center border-b border-blue-700">
+      <h1 class="text-lg font-bold">⚙️ Panel Admin</h1>
+      <p class="text-sm text-blue-300">{{ current_user.nombre }}</p>
+    </div>
+
+    <!-- Navegación -->
+    <nav class="flex-1 p-4 space-y-2 text-sm">
+      <a href="{{ url_for('admin.admin_dashboard') }}"
+         class="block px-4 py-2 rounded {% if request.endpoint == 'admin.admin_dashboard' %} bg-blue-700 text-white {% else %} hover:bg-blue-700 {% endif %}">
+        📊 Dashboard
+      </a>
+
+      <a href="{{ url_for('admin.admin_negocios') }}"
+         class="block px-4 py-2 rounded {% if request.endpoint == 'admin.admin_negocios' %} bg-blue-700 text-white {% else %} hover:bg-blue-700 {% endif %}">
+        🏢 Negocios
+      </a>
+
+      <a href="{{ url_for('admin.admin_noticias') }}"
+         class="block px-4 py-2 rounded {% if request.endpoint == 'admin.admin_noticias' %} bg-blue-700 text-white {% else %} hover:bg-blue-700 {% endif %}">
+        📰 Noticias
+      </a>
+
+      <a href="{{ url_for('admin.admin_avisos') }}"
+         class="block px-4 py-2 rounded {% if request.endpoint == 'admin.admin_avisos' %} bg-blue-700 text-white {% else %} hover:bg-blue-700 {% endif %}">
+        📢 Avisos
+      </a>
+
+      <a href="{{ url_for('admin.admin_eventos') }}"
+         class="block px-4 py-2 rounded {% if request.endpoint == 'admin.admin_eventos' %} bg-blue-700 text-white {% else %} hover:bg-blue-700 {% endif %}">
+        🎉 Eventos
+      </a>
+    </nav>
+
+    <!-- Logout -->
+    <div class="p-4 border-t border-blue-700">
+      
+      <a href="{{ url_for('auth.logout') }}"
+             class="rounded-lg bg-red-500 px-4 py-2 font-semibold text-white shadow hover:bg-red-600 transition">
+            🚪 Salir
+          </a>
+    </div>
+  </aside>
+
+  <!-- Contenido principal -->
+  <div class="flex-1 flex flex-col">
+    <!-- Header -->
+    <header class="bg-white shadow px-6 py-4 flex justify-between items-center">
+      <h2 class="text-xl font-bold text-gray-800">{% block header %}Panel de Administración{% endblock %}</h2>
+      <span class="text-sm text-gray-500">Bienvenido, {{ current_user.nombre }}</span>
+    </header>
+
+    <!-- Flash messages -->
+    <div class="px-6 mt-4">
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+          <div class="space-y-2">
+            {% for category, message in messages %}
+              <div class="p-3 rounded text-sm
+                {% if category == 'success' %} bg-green-100 text-green-800
+                {% elif category == 'warning' %} bg-yellow-100 text-yellow-800
+                {% elif category == 'error' %} bg-red-100 text-red-800
+                {% else %} bg-gray-100 text-gray-800
+                {% endif %}">
+                {{ message }}
+              </div>
+            {% endfor %}
+          </div>
+        {% endif %}
+      {% endwith %}
+    </div>
+
+    <!-- Bloque de contenido dinámico -->
+    <main class="flex-1 overflow-y-auto p-6">
+      {% block content %}{% endblock %}
+    </main>
+  </div>
+</body>
+</html>

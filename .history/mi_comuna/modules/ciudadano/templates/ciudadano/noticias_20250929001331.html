@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block content %}
+
+<section class="max-w-5xl mx-auto px-6 py-12">
+  <h1 class="text-3xl font-bold mb-6">📰 Mis Noticias</h1>
+
+  <div class="bg-white p-6 rounded-xl shadow mb-8">
+    <h2 class="text-xl font-semibold mb-4">➕ Nueva Noticia</h2>
+    <form method="POST" enctype="multipart/form-data" class="space-y-4">
+      {{ form.hidden_tag() }}
+
+      <div>
+        {{ form.titulo.label(class="block text-sm font-medium text-gray-700 mb-1") }}
+        {{ form.titulo(class="w-full rounded-lg border px-3 py-2") }}
+      </div>
+
+      <div>
+        {{ form.contenido.label(class="block text-sm font-medium text-gray-700 mb-1") }}
+        {{ form.contenido(class="w-full rounded-lg border px-3 py-2", rows="4") }}
+      </div>
+
+      <button type="submit" 
+              class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg shadow">
+        📰 Publicar Noticia
+      </button>
+    </form>
+  </div>
+
+  <h2 class="text-2xl font-bold mb-4">📌 Noticias Publicadas</h2>
+  {% if noticias %}
+    <div class="space-y-6">
+      {% for n in noticias %}
+        <div class="bg-white p-6 rounded-xl shadow">
+          <h3 class="font-bold text-lg">{{ n.titulo }}</h3>
+          <p class="text-gray-600 mt-2">{{ n.contenido }}</p>
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <p class="text-gray-500">⚠️ No has publicado noticias todavía.</p>
+  {% endif %}
+</section>
+
+{% endblock %}

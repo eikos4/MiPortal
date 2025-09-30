@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+{% block content %}
+
+<section class="max-w-6xl mx-auto px-6 py-12">
+  <!-- Título -->
+  <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 mb-10 text-center">
+    💸 Gestión de Ofertas
+  </h1>
+
+  <!-- Formulario Nueva Oferta -->
+  <div class="bg-white p-8 rounded-2xl shadow-lg mb-12 border border-gray-200">
+    <h2 class="text-xl font-bold text-gray-800 mb-6">➕ Crear nueva oferta</h2>
+    <form method="POST" enctype="multipart/form-data" class="space-y-6">
+      {{ form.hidden_tag() }}
+
+      <!-- Título -->
+      <div>
+        {{ form.titulo.label(class="block text-sm font-semibold text-gray-700 mb-1") }}
+        {{ form.titulo(class="w-full rounded-lg border px-3 py-2 focus:ring-2 focus:ring-green-500") }}
+      </div>
+
+      <!-- Descripción -->
+      <div>
+        {{ form.descripcion.label(class="block text-sm font-semibold text-gray-700 mb-1") }}
+        {{ form.descripcion(class="w-full rounded-lg border px-3 py-2 focus:ring-2 focus:ring-green-500", rows="3") }}
+      </div>
+
+      <!-- Imagen -->
+      <div>
+        {{ form.imagen.label(class="block text-sm font-semibold text-gray-700 mb-1") }}
+        {{ form.imagen(class="block w-full text-sm text-gray-600 file:mr-4 file:py-2 file:px-4
+                              file:rounded-lg file:border-0
+                              file:text-sm file:font-semibold
+                              file:bg-green-600 file:text-white
+                              hover:file:bg-green-700 cursor-pointer") }}
+      </div>
+
+      <!-- Botón -->
+      <div class="text-right">
+        {{ form.submit(class="px-6 py-2.5 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg shadow transition") }}
+      </div>
+    </form>
+  </div>
+
+  <!-- Listado de Ofertas -->
+  <h2 class="text-2xl font-bold text-gray-800 mb-6">📋 Ofertas Publicadas</h2>
+
+  {% if ofertas %}
+    <div class="grid md:grid-cols-2 gap-8">
+      {% for o in ofertas %}
+      <div class="bg-white rounded-2xl shadow-md hover:shadow-lg transition border border-gray-200 flex flex-col">
+        
+        <!-- Imagen -->
+        {% if o.imagen %}
+          <img src="{{ url_for('static', filename=o.imagen) }}" 
+               alt="{{ o.titulo }}"
+               class="w-full h-44 object-cover rounded-t-2xl">
+        {% endif %}
+
+        <!-- Contenido -->
+        <div class="p-6 flex-1 flex flex-col justify-between">
+          <div>
+            <h3 class="text-lg font-bold text-gray-900">{{ o.titulo }}</h3>
+            <p class="text-gray-600 text-sm mt-2">{{ o.descripcion }}</p>
+            <p class="text-xs text-gray-400 mt-3">
+              📅 Publicado: {{ o.creado_en.strftime("%d/%m/%Y") if o.creado_en else "Sin fecha" }}
+            </p>
+          </div>
+
+          <!-- Botón eliminar -->
+          <form method="POST" 
+                action="{{ url_for('ciudadano.eliminar_oferta', id=o.id) }}" 
+                class="mt-4">
+            {{ form.hidden_tag() }}
+            <button type="submit" 
+                    class="w-full bg-red-600 hover:bg-red-700 text-white py-2 rounded-lg shadow font-semibold">
+              ❌ Eliminar
+            </button>
+          </form>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <p class="text-gray-500 italic">⚠️ Aún no tienes ofertas publicadas.</p>
+  {% endif %}
+</section>
+
+{% endblock %}

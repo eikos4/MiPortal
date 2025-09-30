@@ -1,0 +1,121 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<!-- HERO -->
+<section class="relative h-[50vh] min-h-[360px] flex items-center justify-center bg-cover bg-center"
+         style="background-image: url('{{ url_for('static', filename='img/digua.jpg') }}');">
+  <div class="absolute inset-0 bg-black/60"></div>
+  <div class="relative z-10 text-center text-white max-w-3xl px-6">
+    <h1 class="text-4xl md:text-5xl font-extrabold">🚨 Avisos importantes</h1>
+    <p class="mt-4 text-lg text-gray-200">
+      Mantente informado sobre cortes de servicios, comunicados oficiales y alertas relevantes de {{ config.MUNICIPALITY_NAME or "la comuna" }}.
+    </p>
+    <div class="mt-6 flex flex-wrap justify-center gap-4">
+      <a href="#listado-avisos"
+         class="bg-yellow-400 hover:bg-yellow-300 text-gray-900 font-semibold px-6 py-3 rounded-lg shadow">
+        📋 Ver avisos
+      </a>
+      <a href=""
+         class="bg-red-600 hover:bg-red-700 text-white font-semibold px-6 py-3 rounded-lg shadow">
+        ➕ Publicar un aviso
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- LISTADO DE AVISOS -->
+<section class="max-w-7xl mx-auto px-6 py-12" id="listado-avisos">
+  <div class="flex flex-col md:flex-row md:items-end md:justify-between gap-4 mb-8">
+    <div>
+      <h2 class="text-2xl font-bold text-gray-900">📢 Comunicados recientes</h2>
+      <p class="text-gray-600">Últimos avisos publicados para la comunidad.</p>
+    </div>
+
+    <!-- Filtros -->
+    <form method="get" action="{{ url_for('inicio.avisos') }}" class="w-full md:w-auto">
+      <div class="flex flex-col sm:flex-row gap-3">
+        <input name="q" value="{{ request.args.get('q','') }}" type="text" placeholder="Buscar aviso..."
+               class="w-full sm:w-64 border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-red-600">
+        <input name="desde" value="{{ request.args.get('desde','') }}" type="date"
+               class="border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-red-600">
+        <input name="hasta" value="{{ request.args.get('hasta','') }}" type="date"
+               class="border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-red-600">
+        <label class="inline-flex items-center gap-2 text-sm text-gray-600">
+          <input type="checkbox" name="vigentes" value="1" {% if request.args.get('vigentes') %}checked{% endif %}>
+          Solo vigentes
+        </label>
+        <button class="bg-red-600 hover:bg-red-700 text-white font-semibold rounded-lg px-4 py-2">
+          Filtrar
+        </button>
+      </div>
+    </form>
+  </div>
+
+  {% if avisos and avisos|length %}
+    <div class="space-y-4">
+      {% for a in avisos %}
+        <div class="rounded-xl bg-red-50 border-l-4 border-red-600 p-5 shadow-sm hover:shadow-md transition">
+          <p class="text-red-900 font-semibold">{{ a.mensaje }}</p>
+          <p class="text-sm text-gray-700 mt-1">
+            Vigente desde <strong>{{ a.fecha_inicio.strftime("%d/%m/%Y") }}</strong>
+            {% if a.fecha_fin %} hasta <strong>{{ a.fecha_fin.strftime("%d/%m/%Y") }}</strong>{% endif %}
+          </p>
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <!-- Empty state -->
+    <div class="bg-gray-50 border rounded-xl p-10 text-center">
+      <svg class="w-10 h-10 mx-auto text-gray-400" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+        <path stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01M21 12a9 9 0 
+        11-18 0 9 9 0 0118 0z"/>
+      </svg>
+      <p class="mt-3 text-gray-600">Sin avisos por ahora. ¡Buenas noticias! 😉</p>
+      <a href=""
+         class="mt-4 inline-block bg-red-600 hover:bg-red-700 text-white font-semibold px-6 py-3 rounded-lg shadow">
+        ➕ Publicar un aviso
+      </a>
+    </div>
+  {% endif %}
+
+  <!-- Paginación -->
+  {% if pagination is defined %}
+  <div class="mt-8 flex items-center justify-center gap-2">
+    {% if pagination.has_prev %}
+      <a href="{{ url_for('inicio.avisos', page=pagination.prev_num, **request.args.to_dict(flat=True)) }}"
+         class="px-3 py-2 rounded border hover:bg-gray-50">Anterior</a>
+    {% endif %}
+    <span class="px-3 py-2 text-sm text-gray-600">Página {{ pagination.page }} de {{ pagination.pages }}</span>
+    {% if pagination.has_next %}
+      <a href="{{ url_for('inicio.avisos', page=pagination.next_num, **request.args.to_dict(flat=True)) }}"
+         class="px-3 py-2 rounded border hover:bg-gray-50">Siguiente</a>
+    {% endif %}
+  </div>
+  {% endif %}
+</section>
+
+<!-- CTA FINAL -->
+<section class="relative bg-gradient-to-r from-red-600 to-pink-700 py-16 text-white">
+  <div class="relative mx-auto max-w-7xl px-6 flex flex-col md:flex-row items-center justify-between gap-8">
+    <div class="max-w-xl text-center md:text-left">
+      <h2 class="text-3xl font-extrabold">📢 ¿Tienes algo importante que comunicar?</h2>
+      <p class="mt-2 text-red-100 text-lg">
+        Cambios de horario, cierres temporales, cortes de servicios o comunicados urgentes.  
+        Publícalo en nuestro portal y llega a toda la comunidad en minutos.
+      </p>
+    </div>
+    <div class="flex flex-col sm:flex-row gap-4">
+      <a href=""
+         class="bg-yellow-400 hover:bg-yellow-300 text-gray-900 font-semibold px-6 py-3 rounded-lg shadow text-center">
+        ➕ Publicar aviso
+      </a>
+      <a href=""
+         class="bg-white/10 border border-white/30 hover:bg-white/20 text-white font-semibold px-6 py-3 rounded-lg shadow text-center">
+        ✉️ Contactar al equipo
+      </a>
+    </div>
+  </div>
+</section>
+
+{% endblock %}

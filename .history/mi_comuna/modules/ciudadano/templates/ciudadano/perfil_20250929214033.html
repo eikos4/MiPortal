@@ -1,0 +1,119 @@
+{% extends "base.html" %}
+{% block content %}
+
+<section class="bg-gradient-to-br from-blue-900 to-indigo-900 min-h-screen py-12 text-white">
+  <div class="max-w-4xl mx-auto px-6">
+
+    <!-- Título -->
+    <div class="mb-8 text-center">
+      <h1 class="text-3xl md:text-4xl font-extrabold">🏢 Perfil de Empresa</h1>
+      <p class="mt-2 text-gray-200">Edita y actualiza la información de tu negocio.</p>
+    </div>
+
+    <!-- Formulario -->
+    <form method="POST" enctype="multipart/form-data"
+          class="bg-white/10 p-8 rounded-2xl shadow-lg space-y-6">
+      {{ form.hidden_tag() }}
+
+      <!-- Nombre -->
+      <div>
+        {{ form.nombre.label(class="block text-sm font-semibold mb-1") }}
+        {{ form.nombre(class="w-full px-4 py-2 rounded-lg border border-gray-300 text-gray-900") }}
+        {% for error in form.nombre.errors %}
+          <p class="text-red-400 text-sm mt-1">{{ error }}</p>
+        {% endfor %}
+      </div>
+
+      <!-- Descripción -->
+      <div>
+        {{ form.descripcion.label(class="block text-sm font-semibold mb-1") }}
+        {{ form.descripcion(class="w-full px-4 py-2 rounded-lg border border-gray-300 text-gray-900 h-28") }}
+        {% for error in form.descripcion.errors %}
+          <p class="text-red-400 text-sm mt-1">{{ error }}</p>
+        {% endfor %}
+      </div>
+
+      <!-- Dirección -->
+      <div>
+        {{ form.direccion.label(class="block text-sm font-semibold mb-1") }}
+        {{ form.direccion(class="w-full px-4 py-2 rounded-lg border border-gray-300 text-gray-900") }}
+      </div>
+
+      <!-- Teléfonos -->
+      <div class="grid md:grid-cols-2 gap-6">
+        <div>
+          {{ form.telefono.label(class="block text-sm font-semibold mb-1") }}
+          {{ form.telefono(class="w-full px-4 py-2 rounded-lg border border-gray-300 text-gray-900") }}
+        </div>
+        <div>
+          {{ form.whatsapp.label(class="block text-sm font-semibold mb-1") }}
+          {{ form.whatsapp(class="w-full px-4 py-2 rounded-lg border border-gray-300 text-gray-900") }}
+        </div>
+      </div>
+
+      <!-- Email y Web -->
+      <div class="grid md:grid-cols-2 gap-6">
+        <div>
+          {{ form.email.label(class="block text-sm font-semibold mb-1") }}
+          {{ form.email(class="w-full px-4 py-2 rounded-lg border border-gray-300 text-gray-900") }}
+        </div>
+        <div>
+          {{ form.sitio_web.label(class="block text-sm font-semibold mb-1") }}
+          {{ form.sitio_web(class="w-full px-4 py-2 rounded-lg border border-gray-300 text-gray-900") }}
+        </div>
+      </div>
+
+      <!-- Redes Sociales -->
+      <div class="grid md:grid-cols-3 gap-6">
+        <div>
+          {{ form.facebook.label(class="block text-sm font-semibold mb-1") }}
+          {{ form.facebook(class="w-full px-4 py-2 rounded-lg border border-gray-300 text-gray-900") }}
+        </div>
+        <div>
+          {{ form.instagram.label(class="block text-sm font-semibold mb-1") }}
+          {{ form.instagram(class="w-full px-4 py-2 rounded-lg border border-gray-300 text-gray-900") }}
+        </div>
+        <div>
+          {{ form.tiktok.label(class="block text-sm font-semibold mb-1") }}
+          {{ form.tiktok(class="w-full px-4 py-2 rounded-lg border border-gray-300 text-gray-900") }}
+        </div>
+      </div>
+
+      <!-- Categoría -->
+      <div>
+        {{ form.categoria_id.label(class="block text-sm font-semibold mb-1") }}
+        {{ form.categoria_id(class="w-full px-4 py-2 rounded-lg border border-gray-300 text-gray-900") }}
+      </div>
+
+      <!-- Logo -->
+      <div>
+        {{ form.logo.label(class="block text-sm font-semibold mb-1") }}
+        {{ form.logo(class="w-full text-gray-200 file:mr-4 file:py-2 file:px-4
+                              file:rounded-lg file:border-0
+                              file:text-sm file:font-semibold
+                              file:bg-green-600 file:text-white
+                              hover:file:bg-green-700") }}
+        {% if perfil.logo %}
+          <p class="mt-2 text-sm text-gray-300">Logo actual:</p>
+          <img src="{{ url_for('static', filename=perfil.logo) }}"
+               alt="Logo empresa"
+               class="h-20 mt-2 rounded-lg shadow-md border border-gray-300">
+        {% endif %}
+      </div>
+
+      <!-- Horario -->
+      <div>
+        {{ form.horario.label(class="block text-sm font-semibold mb-1") }}
+        {{ form.horario(class="w-full px-4 py-2 rounded-lg border border-gray-300 text-gray-900") }}
+      </div>
+
+      <!-- Botón -->
+      <div class="text-center">
+        {{ form.submit(class="px-6 py-3 bg-yellow-400 text-gray-900 font-semibold rounded-lg shadow hover:bg-yellow-300 transition") }}
+      </div>
+    </form>
+
+  </div>
+</section>
+
+{% endblock %}

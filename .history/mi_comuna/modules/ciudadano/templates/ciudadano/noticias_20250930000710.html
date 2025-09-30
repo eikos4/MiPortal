@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+{% block content %}
+
+<section class="py-12 bg-gray-50 min-h-screen">
+  <div class="max-w-5xl mx-auto px-6">
+
+    <!-- Título -->
+    <h1 class="text-3xl font-extrabold text-gray-800 mb-8 text-center">
+      📰 Gestión de Noticias
+    </h1>
+
+    <!-- Formulario -->
+    <div class="bg-white shadow rounded-xl p-6 mb-10">
+      <h2 class="text-xl font-bold text-gray-700 mb-4">➕ Publicar nueva noticia</h2>
+      <form method="POST" enctype="multipart/form-data" class="space-y-5">
+        {{ form.hidden_tag() }}
+
+        <!-- Título -->
+        <div>
+          {{ form.titulo.label(class="block text-sm font-medium text-gray-700 mb-1") }}
+          {{ form.titulo(class="w-full rounded-lg border px-3 py-2 focus:ring-2 focus:ring-blue-500") }}
+        </div>
+
+        <!-- Contenido -->
+        <div>
+          {{ form.contenido.label(class="block text-sm font-medium text-gray-700 mb-1") }}
+          {{ form.contenido(class="w-full rounded-lg border px-3 py-2 focus:ring-2 focus:ring-blue-500", rows="5") }}
+        </div>
+
+        <!-- Imagen -->
+        <div>
+          {{ form.imagen.label(class="block text-sm font-medium text-gray-700 mb-1") }}
+          {{ form.imagen(class="w-full text-sm text-gray-600") }}
+        </div>
+
+        <!-- Fecha publicación -->
+        <div>
+          {{ form.fecha_publicacion.label(class="block text-sm font-medium text-gray-700 mb-1") }}
+          {{ form.fecha_publicacion(class="w-full rounded-lg border px-3 py-2 focus:ring-2 focus:ring-blue-500") }}
+        </div>
+
+        <!-- Botón -->
+        <div>
+          {{ form.submit(class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2.5 rounded-lg shadow-md") }}
+        </div>
+      </form>
+    </div>
+
+    <!-- Listado de Noticias -->
+    <div>
+      <h2 class="text-xl font-bold text-gray-700 mb-6">📋 Mis Noticias Publicadas</h2>
+
+      {% if noticias %}
+        <div class="space-y-6">
+          {% for n in noticias %}
+            <div class="bg-white shadow rounded-lg p-6 hover:shadow-lg transition">
+              <!-- Imagen -->
+              {% if n.imagen %}
+                <img src="{{ url_for('static', filename=n.imagen) }}" 
+                     alt="{{ n.titulo }}" 
+                     class="w-full h-48 object-cover rounded-lg mb-4">
+              {% endif %}
+
+              <!-- Contenido -->
+              <h3 class="text-lg font-bold text-gray-800">{{ n.titulo }}</h3>
+              <p class="text-gray-600 mt-2">{{ n.contenido }}</p>
+
+              <p class="text-xs text-gray-400 mt-3">
+                📅 Publicado: 
+                {{ n.fecha_publicacion.strftime("%d/%m/%Y") if n.fecha_publicacion else "Sin fecha" }}
+              </p>
+            </div>
+          {% endfor %}
+        </div>
+      {% else %}
+        <p class="text-gray-500 italic">⚠️ Aún no has publicado noticias.</p>
+      {% endif %}
+    </div>
+
+  </div>
+</section>
+
+{% endblock %}

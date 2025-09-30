@@ -1,0 +1,125 @@
+{% extends "base.html" %}
+{% block content %}
+
+<section class="bg-gray-50 min-h-screen py-12">
+  <div class="max-w-6xl mx-auto px-6">
+
+    <!-- Bienvenida -->
+    <div class="mb-10 text-center">
+      <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900">
+        👋 ¡Hola, {{ current_user.nombre }}!
+      </h1>
+      <p class="mt-2 text-gray-600">
+        Bienvenido a tu panel de control. Desde aquí puedes <span class="font-semibold">gestionar tu empresa, publicar noticias, avisos, eventos y ofertas</span> para que toda la comuna las vea.
+      </p>
+    </div>
+
+    <!-- Resumen negocio -->
+    {% if perfil %}
+      <div class="bg-white rounded-2xl shadow-lg p-6 mb-10 border border-gray-200">
+        <h2 class="text-xl font-bold mb-4 text-gray-800">📌 Tu Empresa</h2>
+        <p class="text-lg font-semibold text-indigo-600">{{ perfil.nombre }}</p>
+        <p class="text-sm text-gray-600">{{ perfil.descripcion or "Sin descripción" }}</p>
+        <p class="text-sm text-gray-500 mt-2">📍 Dirección: {{ perfil.direccion or "No especificada" }}</p>
+        {% if perfil.categoria %}
+          <span class="inline-block mt-3 px-3 py-1 bg-indigo-100 text-indigo-700 rounded-full text-xs font-semibold">
+            {{ perfil.categoria.nombre }}
+          </span>
+        {% endif %}
+
+        <!-- Indicadores rápidos -->
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6 text-center">
+          <div class="bg-gray-50 p-4 rounded-lg border">
+            <p class="text-xl font-bold text-indigo-600">{{ perfil.avisos|length }}</p>
+            <p class="text-xs text-gray-500">Avisos</p>
+          </div>
+          <div class="bg-gray-50 p-4 rounded-lg border">
+            <p class="text-xl font-bold text-indigo-600">{{ perfil.eventos|length }}</p>
+            <p class="text-xs text-gray-500">Eventos</p>
+          </div>
+          <div class="bg-gray-50 p-4 rounded-lg border">
+            <p class="text-xl font-bold text-indigo-600">{{ perfil.noticias|length }}</p>
+            <p class="text-xs text-gray-500">Noticias</p>
+          </div>
+          <div class="bg-gray-50 p-4 rounded-lg border">
+            <p class="text-xl font-bold text-indigo-600">{{ perfil.ofertas|length }}</p>
+            <p class="text-xs text-gray-500">Ofertas</p>
+          </div>
+        </div>
+      </div>
+    {% else %}
+      <div class="bg-yellow-100 border border-yellow-300 text-gray-800 p-6 rounded-2xl shadow mb-10 text-center">
+        <h2 class="font-bold text-lg">⚠️ Aún no has registrado tu empresa</h2>
+        <p class="mt-2">Por solo <span class="font-bold text-yellow-700">5.000 CLP mensuales</span> tendrás:</p>
+        <ul class="mt-2 text-left max-w-md mx-auto list-disc list-inside text-sm text-gray-700">
+          <li>Presencia en el portal comunal</li>
+          <li>Publicación de ofertas y avisos</li>
+          <li>Eventos exclusivos de tu negocio</li>
+          <li>Espacio de noticias personalizadas</li>
+        </ul>
+        <a href="{{ url_for('negocios.registrar') }}"
+           class="inline-block mt-4 px-6 py-3 bg-indigo-600 text-white rounded-lg shadow hover:bg-indigo-700 transition">
+          🚀 Registrar mi empresa ahora
+        </a>
+      </div>
+    {% endif %}
+
+    <!-- Accesos rápidos -->
+    <h2 class="text-xl font-bold text-gray-800 mb-4">⚡ Accesos rápidos</h2>
+    <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+      
+      <!-- Perfil -->
+      <a href="{{ url_for('ciudadano.perfil') }}"
+         class="block bg-white hover:shadow-md border border-gray-200 p-6 rounded-xl transition">
+        <h3 class="text-lg font-bold mb-2 text-gray-900">👤 Perfil de Empresa</h3>
+        <p class="text-sm text-gray-600">Edita la información básica de tu negocio.</p>
+      </a>
+
+      <!-- Noticias -->
+      <a href="{{ url_for('ciudadano.noticias') }}"
+         class="block bg-white hover:shadow-md border border-gray-200 p-6 rounded-xl transition">
+        <h3 class="text-lg font-bold mb-2 text-gray-900">📰 Noticias</h3>
+        <p class="text-sm text-gray-600">Publica novedades o comunicados importantes.</p>
+      </a>
+
+      <!-- Avisos -->
+      <a href="{{ url_for('ciudadano.avisos') }}"
+         class="block bg-white hover:shadow-md border border-gray-200 p-6 rounded-xl transition">
+        <h3 class="text-lg font-bold mb-2 text-gray-900">📢 Avisos</h3>
+        <p class="text-sm text-gray-600">Informa promociones rápidas o mensajes a la comunidad.</p>
+      </a>
+
+      <!-- Eventos -->
+      <a href="{{ url_for('ciudadano.eventos') }}"
+         class="block bg-white hover:shadow-md border border-gray-200 p-6 rounded-xl transition">
+        <h3 class="text-lg font-bold mb-2 text-gray-900">🎉 Eventos</h3>
+        <p class="text-sm text-gray-600">Organiza y promociona actividades de tu negocio.</p>
+      </a>
+
+      <!-- Ofertas -->
+      <a href="{{ url_for('ciudadano.ofertas') }}"
+         class="block bg-white hover:shadow-md border border-gray-200 p-6 rounded-xl transition">
+        <h3 class="text-lg font-bold mb-2 text-gray-900">💸 Ofertas</h3>
+        <p class="text-sm text-gray-600">Sube tus promociones con imagen, título y descripción.</p>
+      </a>
+    </div>
+
+    <!-- Consejos -->
+    <div class="mt-12 bg-indigo-50 border border-indigo-200 rounded-xl p-6 shadow-sm">
+      <h3 class="font-bold text-indigo-700 mb-2">💡 Consejo rápido</h3>
+      <p class="text-sm text-gray-700">
+        Mantén actualizado tu perfil y publica al menos una noticia al mes para que tu negocio siempre esté visible en la comuna.  
+        ¡Un negocio activo atrae más clientes!
+      </p>
+    </div>
+
+    <!-- Soporte -->
+    <div class="mt-6 text-center">
+      <p class="text-sm text-gray-500">¿Necesitas ayuda?</p>
+      <a href="#" class="text-indigo-600 hover:underline font-medium">Contacta al soporte</a>
+    </div>
+
+  </div>
+</section>
+
+{% endblock %}

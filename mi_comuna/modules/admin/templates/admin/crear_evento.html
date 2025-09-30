@@ -1,0 +1,44 @@
+{% extends "admin/base_admin.html" %}
+
+{% block header %}🎉 Crear Evento{% endblock %}
+
+{% block content %}
+<div class="max-w-3xl mx-auto bg-white p-8 rounded-xl shadow">
+  <h1 class="text-2xl font-bold text-gray-800 mb-6">➕ Nuevo Evento</h1>
+
+  <form method="POST" class="space-y-6">
+    <!-- Título -->
+    <div>
+      <label for="titulo" class="block text-sm font-medium text-gray-700">Título</label>
+      <input type="text" id="titulo" name="titulo" required
+             class="mt-1 w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 p-2">
+    </div>
+
+    <!-- Lugar -->
+    <div>
+      <label for="lugar" class="block text-sm font-medium text-gray-700">Lugar</label>
+      <input type="text" id="lugar" name="lugar" required
+             class="mt-1 w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 p-2">
+    </div>
+
+    <!-- Fecha -->
+    <div>
+      <label for="fecha" class="block text-sm font-medium text-gray-700">Fecha</label>
+      <input type="date" id="fecha" name="fecha" required
+             class="mt-1 w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 p-2">
+    </div>
+
+    <!-- Botones -->
+    <div class="flex justify-end gap-4">
+      <a href="{{ url_for('admin.admin_eventos') }}"
+         class="px-4 py-2 rounded-lg border text-gray-600 hover:bg-gray-100">
+        ⬅️ Cancelar
+      </a>
+      <button type="submit"
+              class="px-5 py-2 rounded-lg bg-blue-600 text-white font-semibold hover:bg-blue-700 focus:ring-4 focus:ring-blue-300">
+        💾 Guardar Evento
+      </button>
+    </div>
+  </form>
+</div>
+{% endblock %}

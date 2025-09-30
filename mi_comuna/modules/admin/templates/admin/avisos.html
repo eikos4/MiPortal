@@ -1,0 +1,44 @@
+{% extends "admin/base_admin.html" %}
+
+{% block content %}
+<section class="p-6">
+  <div class="flex items-center justify-between mb-6">
+    <h1 class="text-2xl font-bold text-gray-800">📢 Avisos</h1>
+    <a href="{{ url_for('admin.admin_crear_aviso') }}" class="bg-blue-600 text-white px-3 py-2 rounded">
+  ➕ Nuevo Aviso
+</a>
+
+  </div>
+
+  {% if avisos %}
+    <div class="overflow-x-auto bg-white shadow rounded-lg">
+      <table class="w-full text-sm text-left text-gray-600">
+        <thead class="bg-gray-100 text-gray-700 uppercase text-xs">
+          <tr>
+            <th class="px-6 py-3">Mensaje</th>
+            <th class="px-6 py-3">Inicio</th>
+            <th class="px-6 py-3">Fin</th>
+            <th class="px-6 py-3">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for a in avisos %}
+          <tr class="border-b hover:bg-gray-50">
+            <td class="px-6 py-3">{{ a.mensaje }}</td>
+            <td class="px-6 py-3">{{ a.fecha_inicio.strftime('%d-%m-%Y') }}</td>
+            <td class="px-6 py-3">{{ a.fecha_fin.strftime('%d-%m-%Y') }}</td>
+            <td class="px-6 py-3">
+              <a href="{{ url_for('admin.eliminar_aviso', id=a.id) }}" class="text-red-600 hover:underline">Eliminar</a>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <div class="bg-white p-8 text-center rounded-lg shadow">
+      <p class="text-gray-500">No hay avisos registrados.</p>
+    </div>
+  {% endif %}
+</section>
+{% endblock %}

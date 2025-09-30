@@ -1,0 +1,41 @@
+{% extends "admin/base_admin.html" %}
+
+{% block content %}
+<section class="p-6">
+  <div class="flex items-center justify-between mb-6">
+    <h1 class="text-2xl font-bold text-gray-800">📰 Noticias</h1>
+    <a href="{{ url_for('admin.admin_crear_noticia') }}">➕ Crear Noticia</a>
+
+  </div>
+
+  {% if noticias %}
+    <div class="overflow-x-auto bg-white shadow rounded-lg">
+      <table class="w-full text-sm text-left text-gray-600">
+        <thead class="bg-gray-100 text-gray-700 uppercase text-xs">
+          <tr>
+            <th class="px-6 py-3">Título</th>
+            <th class="px-6 py-3">Fecha</th>
+            <th class="px-6 py-3">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for n in noticias %}
+          <tr class="border-b hover:bg-gray-50">
+            <td class="px-6 py-3 font-medium text-gray-900">{{ n.titulo }}</td>
+            <td class="px-6 py-3">{{ n.fecha.strftime('%d-%m-%Y') if n.fecha else '-' }}</td>
+            <td class="px-6 py-3 flex gap-3">
+              <a href="{{ url_for('admin.eliminar_noticia', id=n.id) }}"
+                 class="text-red-600 hover:underline">Eliminar</a>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <div class="bg-white p-8 text-center rounded-lg shadow">
+      <p class="text-gray-500">No hay noticias registradas.</p>
+    </div>
+  {% endif %}
+</section>
+{% endblock %}

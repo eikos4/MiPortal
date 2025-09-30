@@ -1,0 +1,62 @@
+{% extends "admin/base_admin.html" %}
+
+{% block header %}🎉 Gestión de Eventos{% endblock %}
+
+{% block content %}
+<section class="space-y-6">
+  <!-- Header -->
+  <div class="flex justify-between items-center">
+    <h1 class="text-2xl font-bold text-gray-800">Eventos registrados</h1>
+    <a href="{{ url_for('admin.admin_crear_evento') }}"
+       class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-4 py-2 rounded-lg shadow transition">
+      ➕ Crear Evento
+    </a>
+  </div>
+
+  <!-- Tabla de eventos -->
+  <div class="overflow-x-auto bg-white rounded-lg shadow">
+    <table class="min-w-full text-sm text-left">
+      <thead class="bg-gray-100 text-gray-700 uppercase text-xs">
+        <tr>
+          <th class="px-6 py-3">Título</th>
+          <th class="px-6 py-3">Lugar</th>
+          <th class="px-6 py-3">Fecha</th>
+          <th class="px-6 py-3">Estado</th>
+          <th class="px-6 py-3 text-right">Acciones</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y">
+        {% for evento in eventos %}
+        <tr class="hover:bg-gray-50 transition">
+          <td class="px-6 py-4 font-medium text-gray-900">{{ evento.titulo }}</td>
+          <td class="px-6 py-4 text-gray-700">{{ evento.lugar }}</td>
+          <td class="px-6 py-4 text-gray-600">
+            {{ evento.fecha.strftime('%d/%m/%Y') if evento.fecha else "—" }}
+          </td>
+          <td class="px-6 py-4">
+            {% if evento.fecha and evento.fecha >= now().date() %}
+              <span class="px-2 py-1 bg-green-100 text-green-700 rounded-full text-xs font-semibold">Próximo</span>
+            {% else %}
+              <span class="px-2 py-1 bg-gray-200 text-gray-600 rounded-full text-xs font-semibold">Finalizado</span>
+            {% endif %}
+          </td>
+          <td class="px-6 py-4 text-right space-x-3">
+            <a href="{{ url_for('admin.admin_editar_evento', id=evento.id) }}"
+               class="text-blue-600 hover:text-blue-800 font-semibold text-sm">✏️ Editar</a>
+            <a href="{{ url_for('admin.admin_eliminar_evento', id=evento.id) }}"
+               onclick="return confirm('⚠️ ¿Seguro que deseas eliminar este evento?');"
+               class="text-red-600 hover:text-red-800 font-semibold text-sm">🗑️ Eliminar</a>
+          </td>
+        </tr>
+        {% else %}
+        <tr>
+          <td colspan="5" class="px-6 py-8 text-center text-gray-500 text-sm">
+            No hay eventos registrados todavía.
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+{% endblock %}

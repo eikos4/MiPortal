@@ -1,0 +1,189 @@
+{% extends "base.html" %}
+{% block content %}
+
+<!-- Hero -->
+<section class="relative h-[50vh] w-full overflow-hidden">
+  {% if negocio.imagen %}
+    <img src="{{ url_for('static', filename=negocio.imagen) }}"
+         alt="{{ negocio.nombre }}"
+         class="absolute inset-0 w-full h-full object-cover">
+  {% else %}
+    <div class="absolute inset-0 flex items-center justify-center bg-gray-200 text-gray-500 text-lg">
+      📷 Sin imagen de portada
+    </div>
+  {% endif %}
+  <div class="absolute inset-0 bg-gradient-to-b from-black/70 to-black/80"></div>
+
+  <!-- Info negocio -->
+  <div class="relative z-10 flex items-end h-full max-w-6xl mx-auto px-6 pb-10">
+    <div>
+      {% if perfil and perfil.logo %}
+        <img src="{{ url_for('static', filename=perfil.logo) }}"
+             alt="Logo {{ negocio.nombre }}"
+             class="h-20 w-20 rounded-full border-2 border-white shadow mb-4">
+      {% endif %}
+      <h1 class="text-4xl md:text-5xl font-extrabold text-white drop-shadow-lg">
+        {{ negocio.nombre }}
+      </h1>
+      <p class="mt-2 text-gray-200">
+        {{ negocio.categoria.nombre if negocio.categoria else "Negocio sin categoría" }}
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- Layout -->
+<section class="max-w-6xl mx-auto px-6 py-12 grid md:grid-cols-3 gap-10">
+
+  <!-- Feed -->
+  <div class="md:col-span-2 space-y-8">
+
+    <!-- Sobre el negocio -->
+    <div class="bg-white rounded-xl shadow p-6">
+      <h2 class="text-xl font-bold text-gray-900 mb-3">ℹ️ Sobre nosotros</h2>
+      <p class="text-gray-700 leading-relaxed">
+        {{ negocio.descripcion or "Este negocio aún no ha agregado una descripción." }}
+      </p>
+      <div class="mt-4 text-sm text-gray-600 space-y-1">
+        <p>📍 {{ negocio.direccion }}</p>
+        {% if negocio.horario %}<p>🕑 {{ negocio.horario }}</p>{% endif %}
+      </div>
+    </div>
+
+    <!-- Publicaciones dinámicas -->
+    <div class="space-y-6">
+      {% set publicaciones = [] %}
+      {% if perfil %}
+        {% for aviso in perfil.avisos %}
+          {% set _ = publicaciones.append({"tipo":"aviso", "fecha":aviso.creado_en, "obj":aviso}) %}
+        {% endfor %}
+        {% for evento in perfil.eventos %}
+          {% set _ = publicaciones.append({"tipo":"evento", "fecha":evento.creado_en, "obj":evento}) %}
+        {% endfor %}
+        {% for noticia in perfil.noticias %}
+          {% set _ = publicaciones.append({"tipo":"noticia", "fecha":noticia.fecha_publicacion, "obj":noticia}) %}
+        {% endfor %}
+        {% for oferta in perfil.ofertas %}
+          {% set _ = publicaciones.append({"tipo":"oferta", "fecha":oferta.creado_en, "obj":oferta}) %}
+        {% endfor %}
+      {% endif %}
+
+      {% set publicaciones = publicaciones|sort(attribute="fecha", reverse=True) %}
+
+      {% if publicaciones %}
+        {% for pub in publicaciones %}
+          <article class="bg-white rounded-xl shadow p-6 border-l-4 
+                          {% if pub.tipo == 'aviso' %}border-yellow-400
+                          {% elif pub.tipo == 'evento' %}border-blue-400
+                          {% elif pub.tipo == 'noticia' %}border-gray-400
+                          {% elif pub.tipo == 'oferta' %}border-green-400{% endif %}">
+            <div class="flex items-center gap-2 mb-3">
+              <span class="text-sm px-2 py-1 rounded-full 
+                {% if pub.tipo == 'aviso' %}bg-yellow-100 text-yellow-800
+                {% elif pub.tipo == 'evento' %}bg-blue-100 text-blue-800
+                {% elif pub.tipo == 'noticia' %}bg-gray-100 text-gray-800
+                {% elif pub.tipo == 'oferta' %}bg-green-100 text-green-800{% endif %}">
+                {% if pub.tipo == 'aviso' %}📢 Aviso
+                {% elif pub.tipo == 'evento' %}🎉 Evento
+                {% elif pub.tipo == 'noticia' %}📰 Noticia
+                {% elif pub.tipo == 'oferta' %}💸 Oferta{% endif %}
+              </span>
+              <p class="text-xs text-gray-500">
+                {{ pub.fecha.strftime('%d/%m/%Y') }}
+              </p>
+            </div>
+
+            <h3 class="font-bold text-lg mb-2 text-gray-900">{{ pub.obj.titulo }}</h3>
+
+            {% if pub.obj.imagen %}
+              <img src="{{ url_for('static', filename=pub.obj.imagen) }}"
+                   alt="{{ pub.obj.titulo }}"
+                   class="w-full h-56 object-cover rounded-lg mb-3">
+            {% endif %}
+
+            <p class="text-gray-700 text-sm leading-relaxed">
+              {% if pub.tipo == 'noticia' %}
+                {{ pub.obj.contenido[:250] }}...
+              {% else %}
+                {{ pub.obj.descripcion }}
+              {% endif %}
+            </p>
+
+            {% if pub.tipo == 'evento' %}
+              <p class="text-xs text-gray-500 mt-2">
+                📅 {{ pub.obj.fecha_inicio.strftime('%d/%m/%Y') }}
+                {% if pub.obj.fecha_fin %} - {{ pub.obj.fecha_fin.strftime('%d/%m/%Y') }}{% endif %}
+                {% if pub.obj.lugar %} | 📍 {{ pub.obj.lugar }}{% endif %}
+              </p>
+            {% endif %}
+
+            {% if pub.tipo == 'oferta' %}
+              <div class="mt-2 text-xs">
+                {% if pub.obj.fecha_inicio %}
+                  📅 Desde {{ pub.obj.fecha_inicio.strftime('%d/%m/%Y') }}
+                  {% if pub.obj.fecha_fin %} hasta {{ pub.obj.fecha_fin.strftime('%d/%m/%Y') }}{% endif %}
+                {% endif %}
+                {% if pub.obj.vigente() %}
+                  <span class="ml-2 px-2 py-0.5 bg-green-100 text-green-700 rounded-full">✅ Vigente</span>
+                {% else %}
+                  <span class="ml-2 px-2 py-0.5 bg-red-100 text-red-700 rounded-full">⏰ Expirada</span>
+                {% endif %}
+              </div>
+            {% endif %}
+          </article>
+        {% endfor %}
+      {% else %}
+        <p class="text-gray-500 italic text-center py-12">⚠️ Este negocio aún no tiene publicaciones.</p>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- Columna lateral -->
+  <aside class="space-y-6">
+
+    <!-- Contacto -->
+    <div class="bg-white rounded-xl shadow p-6">
+      <h3 class="text-lg font-bold text-gray-900 mb-3">📞 Contacto</h3>
+      <ul class="space-y-2 text-sm text-gray-700">
+        {% if negocio.telefono %}
+          <li>📞 <a href="tel:{{ negocio.telefono }}" class="text-blue-600 hover:underline">{{ negocio.telefono }}</a></li>
+        {% endif %}
+        {% if negocio.whatsapp %}
+          <li>💬 <a href="https://wa.me/{{ negocio.whatsapp }}" target="_blank" class="text-green-600 hover:underline">WhatsApp</a></li>
+        {% endif %}
+        {% if negocio.email %}
+          <li>📧 <a href="mailto:{{ negocio.email }}" class="text-purple-600 hover:underline">{{ negocio.email }}</a></li>
+        {% endif %}
+        {% if negocio.sitio_web %}
+          <li>🌐 <a href="{{ negocio.sitio_web }}" target="_blank" class="text-indigo-600 hover:underline">Sitio Web</a></li>
+        {% endif %}
+      </ul>
+    </div>
+
+    <!-- Redes sociales -->
+    <div class="bg-white rounded-xl shadow p-6">
+      <h3 class="text-lg font-bold text-gray-900 mb-3">🌍 Redes Sociales</h3>
+      <ul class="space-y-2 text-sm">
+        {% if negocio.facebook %}
+          <li>📘 <a href="{{ negocio.facebook }}" target="_blank" class="text-blue-700 hover:underline">Facebook</a></li>
+        {% endif %}
+        {% if negocio.instagram %}
+          <li>📸 <a href="{{ negocio.instagram }}" target="_blank" class="text-pink-600 hover:underline">Instagram</a></li>
+        {% endif %}
+        {% if negocio.tiktok %}
+          <li>🎶 <a href="{{ negocio.tiktok }}" target="_blank" class="text-black hover:underline">TikTok</a></li>
+        {% endif %}
+      </ul>
+    </div>
+
+    <!-- Categoría -->
+    <div class="bg-white rounded-xl shadow p-6 text-center">
+      <span class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-sm font-semibold">
+        {{ negocio.categoria.nombre if negocio.categoria else "Sin categoría" }}
+      </span>
+    </div>
+
+  </aside>
+</section>
+
+{% endblock %}

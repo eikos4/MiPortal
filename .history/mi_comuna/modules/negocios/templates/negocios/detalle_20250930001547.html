@@ -1,0 +1,168 @@
+{% extends "base.html" %}
+{% block content %}
+
+<!-- Portada -->
+<section class="relative h-[50vh] w-full overflow-hidden">
+  {% if negocio.imagen %}
+    <img src="{{ url_for('static', filename=negocio.imagen) }}"
+         alt="{{ negocio.nombre }}"
+         class="absolute inset-0 w-full h-full object-cover">
+  {% else %}
+    <div class="absolute inset-0 flex items-center justify-center bg-gray-200 text-gray-500 text-lg">
+      📷 Sin imagen de portada
+    </div>
+  {% endif %}
+  <div class="absolute inset-0 bg-gradient-to-b from-black/70 to-black/80"></div>
+
+  <!-- Nombre -->
+  <div class="relative z-10 flex items-end h-full max-w-5xl mx-auto px-6 pb-8">
+    <div>
+      <h1 class="text-4xl md:text-5xl font-extrabold text-white drop-shadow-lg">
+        {{ negocio.nombre }}
+      </h1>
+      <p class="mt-2 text-gray-200">
+        {{ negocio.categoria.nombre if negocio.categoria else "Negocio sin categoría" }}
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- Layout -->
+<section class="max-w-6xl mx-auto px-6 py-10 grid md:grid-cols-3 gap-10">
+
+  <!-- Feed del negocio -->
+  <div class="md:col-span-2 space-y-8">
+
+    <!-- Sobre el negocio -->
+    <div class="bg-white rounded-xl shadow p-6">
+      <h2 class="text-xl font-bold text-gray-900 mb-3">ℹ️ Sobre el negocio</h2>
+      <p class="text-gray-700 leading-relaxed">
+        {{ negocio.descripcion or "Este negocio aún no ha agregado una descripción." }}
+      </p>
+      <p class="mt-4 text-gray-600">📍 {{ negocio.direccion }}</p>
+      {% if negocio.horario %}
+        <p class="mt-2 text-gray-600">🕑 {{ negocio.horario }}</p>
+      {% endif %}
+    </div>
+
+    <!-- Feed dinámico -->
+    <div class="space-y-6">
+      {% set publicaciones = [] %}
+      {% if perfil %}
+        {% for aviso in perfil.avisos %}
+          {% set _ = publicaciones.append({"tipo":"aviso", "fecha":aviso.creado_en, "obj":aviso}) %}
+        {% endfor %}
+        {% for evento in perfil.eventos %}
+          {% set _ = publicaciones.append({"tipo":"evento", "fecha":evento.creado_en, "obj":evento}) %}
+        {% endfor %}
+        {% for noticia in perfil.noticias %}
+          {% set _ = publicaciones.append({"tipo":"noticia", "fecha":noticia.fecha_publicacion, "obj":noticia}) %}
+        {% endfor %}
+        {% for oferta in perfil.ofertas %}
+          {% set _ = publicaciones.append({"tipo":"oferta", "fecha":oferta.creado_en, "obj":oferta}) %}
+        {% endfor %}
+      {% endif %}
+
+      {% set publicaciones = publicaciones|sort(attribute="fecha", reverse=True) %}
+
+      {% if publicaciones %}
+        {% for pub in publicaciones %}
+          {% if pub.tipo == "aviso" %}
+            <div class="bg-yellow-50 border-l-4 border-yellow-400 rounded-lg shadow p-5">
+              <h3 class="font-bold text-yellow-800">📢 {{ pub.obj.titulo }}</h3>
+              {% if pub.obj.imagen %}
+                <img src="{{ url_for('static', filename=pub.obj.imagen) }}" class="w-full h-48 object-cover rounded-lg my-3">
+              {% endif %}
+              <p class="text-gray-700">{{ pub.obj.descripcion }}</p>
+              <p class="text-xs text-gray-500 mt-2">Publicado el {{ pub.obj.creado_en.strftime('%d/%m/%Y') }}</p>
+            </div>
+          {% elif pub.tipo == "evento" %}
+            <div class="bg-blue-50 border-l-4 border-blue-400 rounded-lg shadow p-5">
+              <h3 class="font-bold text-blue-800">🎉 {{ pub.obj.titulo }}</h3>
+              {% if pub.obj.imagen %}
+                <img src="{{ url_for('static', filename=pub.obj.imagen) }}" class="w-full h-48 object-cover rounded-lg my-3">
+              {% endif %}
+              <p class="text-gray-700">{{ pub.obj.descripcion }}</p>
+              <p class="text-xs text-gray-500 mt-2">
+                📅 {{ pub.obj.fecha_inicio.strftime('%d/%m/%Y') }}
+                {% if pub.obj.fecha_fin %} - {{ pub.obj.fecha_fin.strftime('%d/%m/%Y') }}{% endif %}
+                {% if pub.obj.lugar %} | 📍 {{ pub.obj.lugar }}{% endif %}
+              </p>
+            </div>
+          {% elif pub.tipo == "noticia" %}
+            <div class="bg-white border rounded-lg shadow p-5">
+              <h3 class="font-bold text-gray-900">📰 {{ pub.obj.titulo }}</h3>
+              {% if pub.obj.imagen %}
+                <img src="{{ url_for('static', filename=pub.obj.imagen) }}" class="w-full h-48 object-cover rounded-lg my-3">
+              {% endif %}
+              <p class="text-gray-700 text-sm">{{ pub.obj.contenido[:250] }}...</p>
+              <p class="text-xs text-gray-500 mt-2">📅 {{ pub.obj.fecha_publicacion.strftime('%d/%m/%Y') }}</p>
+            </div>
+          {% elif pub.tipo == "oferta" %}
+            <div class="bg-green-50 border-l-4 border-green-400 rounded-lg shadow p-5">
+              <h3 class="font-bold text-green-800">💸 {{ pub.obj.titulo }}</h3>
+              {% if pub.obj.imagen %}
+                <img src="{{ url_for('static', filename=pub.obj.imagen) }}" class="w-full h-48 object-cover rounded-lg my-3">
+              {% endif %}
+              <p class="text-gray-700">{{ pub.obj.descripcion }}</p>
+              {% if pub.obj.fecha_inicio %}
+                <p class="text-xs text-gray-500 mt-2">
+                  📅 {{ pub.obj.fecha_inicio.strftime('%d/%m/%Y') }}
+                  {% if pub.obj.fecha_fin %} hasta {{ pub.obj.fecha_fin.strftime('%d/%m/%Y') }}{% endif %}
+                </p>
+              {% endif %}
+              {% if pub.obj.vigente() %}
+                <span class="inline-block mt-2 px-3 py-1 bg-green-200 text-green-800 text-xs rounded-full">✅ Vigente</span>
+              {% else %}
+                <span class="inline-block mt-2 px-3 py-1 bg-red-200 text-red-800 text-xs rounded-full">⏰ Expirada</span>
+              {% endif %}
+            </div>
+          {% endif %}
+        {% endfor %}
+      {% else %}
+        <p class="text-gray-500 italic">⚠️ Este negocio aún no tiene publicaciones.</p>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- Columna lateral -->
+  <aside class="bg-white rounded-xl shadow p-6 space-y-4">
+    <h3 class="text-lg font-bold text-gray-900">📞 Contacto</h3>
+
+    {% if negocio.telefono %}
+      <p>📞 <a href="tel:{{ negocio.telefono }}" class="text-blue-600 hover:underline">{{ negocio.telefono }}</a></p>
+    {% endif %}
+
+    {% if negocio.whatsapp %}
+      <p>💬 <a href="https://wa.me/{{ negocio.whatsapp }}" target="_blank" class="text-green-600 hover:underline">WhatsApp</a></p>
+    {% endif %}
+
+    {% if negocio.email %}
+      <p>📧 <a href="mailto:{{ negocio.email }}" class="text-purple-600 hover:underline">{{ negocio.email }}</a></p>
+    {% endif %}
+
+    {% if negocio.sitio_web %}
+      <p>🌐 <a href="{{ negocio.sitio_web }}" target="_blank" class="text-indigo-600 hover:underline">Sitio Web</a></p>
+    {% endif %}
+
+    {% if negocio.facebook %}
+      <p>📘 <a href="{{ negocio.facebook }}" target="_blank" class="text-blue-700 hover:underline">Facebook</a></p>
+    {% endif %}
+
+    {% if negocio.instagram %}
+      <p>📸 <a href="{{ negocio.instagram }}" target="_blank" class="text-pink-600 hover:underline">Instagram</a></p>
+    {% endif %}
+
+    {% if negocio.tiktok %}
+      <p>🎶 <a href="{{ negocio.tiktok }}" target="_blank" class="text-black hover:underline">TikTok</a></p>
+    {% endif %}
+
+    <div class="mt-6">
+      <span class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-sm font-semibold">
+        {{ negocio.categoria.nombre if negocio.categoria else "Sin categoría" }}
+      </span>
+    </div>
+  </aside>
+</section>
+
+{% endblock %}

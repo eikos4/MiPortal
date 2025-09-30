@@ -1,0 +1,63 @@
+{% extends "admin/base_admin.html" %}
+{% block content %}
+<section class="max-w-7xl mx-auto px-6 py-10">
+  <h1 class="text-3xl font-extrabold text-gray-900 mb-6">Panel de Negocios</h1>
+
+  {% if negocios and negocios|length %}
+    <div class="overflow-x-auto bg-white shadow rounded-xl">
+      <table class="min-w-full divide-y divide-gray-200">
+        <thead class="bg-gray-50">
+          <tr>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Nombre</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Categoría</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Estado</th>
+            <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Acciones</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-200">
+          {% for n in negocios %}
+          <tr>
+            <td class="px-6 py-4">
+              <div class="flex items-center gap-3">
+                {% if n.imagen %}
+                  <img src="{{ n.imagen }}" class="h-10 w-10 rounded object-cover" alt="{{ n.nombre }}">
+                {% else %}
+                  <div class="h-10 w-10 rounded bg-gray-200 flex items-center justify-center text-gray-500 text-xs">N/A</div>
+                {% endif %}
+                <div>
+                  <p class="text-sm font-semibold text-gray-900">{{ n.nombre }}</p>
+                  <p class="text-xs text-gray-500">{{ n.descripcion|truncate(40, True, '…') }}</p>
+                </div>
+              </div>
+            </td>
+            <td class="px-6 py-4 text-sm text-gray-700">{{ n.categoria.nombre if n.categoria else "Sin categoría" }}</td>
+            <td class="px-6 py-4">
+              {% if n.estado == "aprobado" %}
+                <span class="px-2 py-1 rounded-full bg-green-100 text-green-700 text-xs font-semibold">Aprobado</span>
+              {% elif n.estado == "pendiente" %}
+                <span class="px-2 py-1 rounded-full bg-yellow-100 text-yellow-700 text-xs font-semibold">Pendiente</span>
+              {% else %}
+                <span class="px-2 py-1 rounded-full bg-gray-100 text-gray-700 text-xs font-semibold">{{ n.estado }}</span>
+              {% endif %}
+            </td>
+            <td class="px-6 py-4 text-right text-sm">
+              {% if n.estado == "pendiente" %}
+                <a href="{{ url_for('admin.aprobar_negocio', id=n.id) }}" class="text-green-600 hover:underline font-semibold">✔ Aprobar</a>
+              {% endif %}
+              {% if n.estado == "aprobado" %}
+                <a href="{{ url_for('admin.desactivar_negocio', id=n.id) }}" class="text-yellow-600 hover:underline font-semibold">⚠ Desactivar</a>
+              {% endif %}
+              <a href="{{ url_for('admin.eliminar_negocio', id=n.id) }}" onclick="return confirm('¿Seguro que deseas eliminar este negocio?')" class="text-red-600 hover:underline font-semibold ml-3">🗑 Eliminar</a>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <div class="bg-white border rounded-xl p-10 text-center">
+      <p class="text-gray-600">No hay negocios registrados todavía.</p>
+    </div>
+  {% endif %}
+</section>
+{% endblock %}
