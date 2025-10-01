@@ -19,9 +19,9 @@
     .animate-fadeIn   { animation: fadeIn   .8s ease-out both }
   </style>
 </head>
-<body class="bg-gray-50 text-gray-900 flex min-h-screen flex-col">
+<body class="bg-gray-50 text-gray-900 flex flex-col min-h-screen">
 
-  <!-- 🔹 Header -->
+  <!-- 🔹 Header mejorado -->
  <!-- 🔹 Header en blanco -->
 <header class="bg-white text-gray-900 shadow sticky top-0 z-50">
   <div class="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
@@ -125,10 +125,10 @@
   {% endwith %}
 
   <!-- 🔹 Contenido principal -->
-  <main class="flex-1">{% block content %}{% endblock %}</main>
+  <main class="flex-1 w-full max-w-7xl mx-auto px-6 py-8">{% block content %}{% endblock %}</main>
 
-  <!-- 🔹 Footer -->
-  <footer class="mt-12 bg-gray-900 py-6 text-gray-300">
+  <!-- 🔹 Footer fijo y sin barra blanca -->
+  <footer class="bg-gray-900 py-6 text-gray-300 mt-auto">
     <div class="mx-auto flex max-w-7xl flex-col items-center justify-between gap-4 px-6 md:flex-row">
       <p class="text-sm">© {{ config.MUNICIPALITY_NAME or "Mi Portal Parral" }} – Desarrollado por <span class="font-semibold">kodesk.cl</span></p>
       <div class="flex gap-5 text-sm">
@@ -145,7 +145,6 @@
     document.getElementById("menu-toggle")?.addEventListener("click", () => {
       document.getElementById("mobile-menu").classList.toggle("hidden");
     });
-
     // Desktop dropdown
     document.getElementById("empresa-btn")?.addEventListener("click", () => {
       document.getElementById("empresa-menu").classList.toggle("hidden");
