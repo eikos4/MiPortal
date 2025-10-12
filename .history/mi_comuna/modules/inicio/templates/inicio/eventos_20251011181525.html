@@ -1,0 +1,158 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<!-- HERO -->
+<section class="relative h-[60vh] min-h-[400px] flex items-center justify-center bg-cover bg-center"
+         style="background-image: url('{{ url_for('static', filename='img/plaza.jpg') }}');">
+  <div class="absolute inset-0 bg-black/60"></div>
+  <div class="relative z-10 text-center text-white max-w-3xl px-6">
+    <h1 class="text-4xl md:text-6xl font-extrabold">🎉 Eventos en {{ config.MUNICIPALITY_NAME or "tu comuna" }}</h1>
+    <p class="mt-4 text-lg text-gray-200">
+      Descubre actividades culturales, deportivas y comunitarias.  
+      ¡Y también publica tus propios eventos para que toda la comuna los conozca!
+    </p>
+    <div class="mt-6 flex flex-wrap justify-center gap-4">
+      <a href="#listado-eventos"
+         class="bg-yellow-400 hover:bg-yellow-300 text-gray-900 font-semibold px-6 py-3 rounded-lg shadow transition">
+        📅 Ver próximos eventos
+      </a>
+      <a href="#"
+         class="bg-purple-600 hover:bg-purple-700 text-white font-semibold px-6 py-3 rounded-lg shadow transition">
+        ➕ Publicar mi evento
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- EVENTOS DESTACADOS -->
+<section class="bg-white py-16">
+  <div class="max-w-7xl mx-auto px-6 text-center">
+    <h2 class="text-3xl font-bold text-gray-900">🌟 Próximos Eventos</h2>
+    <p class="mt-2 text-gray-600">No te pierdas lo que está pasando en {{ config.MUNICIPALITY_NAME or "la comuna" }}</p>
+
+    {% if eventos and eventos|length %}
+      <div id="listado-eventos" class="mt-10 grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {% for e in eventos %}
+        <article class="bg-white rounded-xl shadow hover:shadow-xl transition p-6 flex flex-col justify-between cursor-pointer"
+onclick='abrirModal(
+  {{ e.titulo|default("")|tojson }},
+  {{ e.descripcion|default("")|tojson }},
+  {{ e.lugar|default("")|tojson }},
+  {{ e.fecha.strftime("%d/%m/%Y")|default("")|tojson }},
+  {{ (e.hora.strftime("%H:%M") if e.hora else "—")|default("")|tojson }},
+  {{ e.imagen_url|default("")|tojson }}
+)'
+></article>
+
+
+
+
+
+        <div>
+            <!-- Encabezado de fecha + título -->
+            <div class="flex items-center gap-3">
+              <div class="flex flex-col items-center justify-center w-14 h-14 rounded-lg bg-green-50 text-green-700">
+                <span class="text-lg font-extrabold">{{ e.fecha.strftime("%d") }}</span>
+                <span class="text-xs font-semibold uppercase">{{ e.fecha.strftime("%b") }}</span>
+              </div>
+              <div class="text-left">
+                <h3 class="text-lg font-bold text-gray-900">{{ e.titulo }}</h3>
+                <p class="text-sm text-gray-600">
+                  {% if e.hora %}🕑 {{ e.hora.strftime("%H:%M") }} · {% endif %}📍 {{ e.lugar }}
+                </p>
+              </div>
+            </div>
+
+            <!-- Imagen -->
+            <div class="mt-4 w-full h-40 overflow-hidden rounded-lg">
+              <img src="{{ e.imagen_url }}" alt="{{ e.titulo }}" class="w-full h-full object-cover">
+            </div>
+
+            <!-- Descripción corta -->
+            {% if e.descripcion %}
+              <p class="mt-3 text-gray-700 line-clamp-3">{{ e.descripcion }}</p>
+            {% endif %}
+          </div>
+
+          <div class="mt-4 text-right">
+            <span class="inline-flex items-center gap-1 text-green-700 font-semibold hover:underline">
+              Ver detalle →
+            </span>
+          </div>
+        </article>
+        {% endfor %}
+      </div>
+    {% else %}
+      <div class="mt-10 bg-gray-50 border rounded-xl p-10">
+        <p class="text-gray-600">⚠️ Aún no hay eventos programados. Sé el primero en publicar el tuyo.</p>
+        <a href="#"
+           class="mt-4 inline-block bg-green-600 hover:bg-green-700 text-white font-semibold px-6 py-3 rounded-lg shadow transition">
+          ➕ Publicar evento
+        </a>
+      </div>
+    {% endif %}
+  </div>
+</section>
+
+<!-- CTA FINAL -->
+<section class="relative bg-gradient-to-r from-green-600 to-emerald-700 py-16 text-white">
+  <div class="relative mx-auto max-w-7xl px-6 flex flex-col md:flex-row items-center justify-between gap-8">
+    <div class="max-w-xl text-center md:text-left">
+      <h2 class="text-3xl font-extrabold">📢 ¿Quieres que tu evento aparezca aquí?</h2>
+      <p class="mt-2 text-green-100 text-lg">
+        Inauguración de tu negocio, lanzamiento de productos, ferias, talleres o actividades comunitarias.  
+        Publícalo en nuestro portal y llega a toda la comuna. 🚀
+      </p>
+    </div>
+    <div class="flex flex-col sm:flex-row gap-4">
+      <a href="https://wa.me/56920576206?text=Hola%20quiero%20más%20información%20sobre%20el%20portal"
+         class="bg-yellow-400 hover:bg-yellow-300 text-gray-900 font-semibold px-6 py-3 rounded-lg shadow text-center">
+        ➕ Publicar mi evento
+      </a>
+      <a href="https://wa.me/56920576206?text=Hola%20quiero%20más%20información%20sobre%20el%20portal"
+         class="bg-white/10 border border-white/30 hover:bg-white/20 text-white font-semibold px-6 py-3 rounded-lg shadow text-center">
+        ✉️ Contactar al equipo
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- 🔹 MODAL DETALLE EVENTO -->
+<div id="modalEvento" class="fixed inset-0 bg-black/70 backdrop-blur-sm hidden items-center justify-center z-50">
+  <div class="bg-white rounded-2xl shadow-2xl max-w-lg w-full mx-4 overflow-hidden relative animate-fadeInUp">
+    <button onclick="cerrarModal()" class="absolute top-3 right-3 text-gray-500 hover:text-gray-700 text-2xl">&times;</button>
+    <img id="modalImagen" src="" alt="Imagen del evento" class="w-full h-56 object-cover">
+    <div class="p-6 text-left">
+      <h3 id="modalTitulo" class="text-2xl font-bold text-gray-900"></h3>
+      <p id="modalFecha" class="text-sm text-gray-500 mt-1"></p>
+      <p id="modalLugar" class="text-sm text-gray-600 mt-1"></p>
+      <p id="modalDescripcion" class="mt-4 text-gray-800 leading-relaxed"></p>
+      <div class="text-right mt-6">
+        <button onclick="cerrarModal()" class="bg-green-600 hover:bg-green-700 text-white px-5 py-2 rounded-lg font-semibold shadow">
+          Cerrar
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 🔹 SCRIPT MODAL -->
+<script>
+function abrirModal(titulo, descripcion, lugar, fecha, hora, imagen) {
+  document.getElementById('modalTitulo').innerText = titulo;
+  document.getElementById('modalDescripcion').innerText = descripcion;
+  document.getElementById('modalLugar').innerText = "📍 " + lugar;
+  document.getElementById('modalFecha').innerText = "📅 " + fecha + " | 🕑 " + hora;
+  document.getElementById('modalImagen').src = imagen;
+  document.getElementById('modalEvento').classList.remove('hidden');
+  document.getElementById('modalEvento').classList.add('flex');
+}
+
+function cerrarModal() {
+  document.getElementById('modalEvento').classList.add('hidden');
+  document.getElementById('modalEvento').classList.remove('flex');
+}
+</script>
+
+{% endblock %}

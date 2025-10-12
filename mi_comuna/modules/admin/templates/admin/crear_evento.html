@@ -3,39 +3,76 @@
 {% block header %}🎉 Crear Evento{% endblock %}
 
 {% block content %}
-<div class="max-w-3xl mx-auto bg-white p-8 rounded-xl shadow">
+<div class="max-w-3xl mx-auto bg-white p-8 rounded-xl shadow mt-10">
   <h1 class="text-2xl font-bold text-gray-800 mb-6">➕ Nuevo Evento</h1>
 
-  <form method="POST" class="space-y-6">
+  <!-- 🔹 Mensajes flash -->
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      {% for category, message in messages %}
+        <div class="mb-4 px-4 py-3 rounded text-sm
+                    {% if category == 'success' %} bg-green-100 text-green-800
+                    {% elif category == 'warning' %} bg-yellow-100 text-yellow-800
+                    {% elif category == 'danger' %} bg-red-100 text-red-800
+                    {% else %} bg-blue-100 text-blue-800 {% endif %}">
+          {{ message }}
+        </div>
+      {% endfor %}
+    {% endif %}
+  {% endwith %}
+
+  <!-- 🔹 Formulario de creación -->
+  <form method="POST" enctype="multipart/form-data" class="space-y-6">
+    <!-- CSRF Token -->
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
     <!-- Título -->
     <div>
       <label for="titulo" class="block text-sm font-medium text-gray-700">Título</label>
       <input type="text" id="titulo" name="titulo" required
-             class="mt-1 w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 p-2">
+             placeholder="Ej. Feria de Emprendedores"
+             class="mt-1 w-full rounded-lg border border-gray-300 shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 p-2">
+    </div>
+
+    <!-- Descripción -->
+    <div>
+      <label for="descripcion" class="block text-sm font-medium text-gray-700">Descripción</label>
+      <textarea id="descripcion" name="descripcion" rows="5" required
+                placeholder="Describe brevemente el evento..."
+                class="mt-1 w-full rounded-lg border border-gray-300 shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 p-2"></textarea>
     </div>
 
     <!-- Lugar -->
     <div>
       <label for="lugar" class="block text-sm font-medium text-gray-700">Lugar</label>
       <input type="text" id="lugar" name="lugar" required
-             class="mt-1 w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 p-2">
+             placeholder="Ej. Plaza de Armas, Centro Cultural..."
+             class="mt-1 w-full rounded-lg border border-gray-300 shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 p-2">
     </div>
 
     <!-- Fecha -->
     <div>
       <label for="fecha" class="block text-sm font-medium text-gray-700">Fecha</label>
       <input type="date" id="fecha" name="fecha" required
-             class="mt-1 w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 p-2">
+             class="mt-1 w-full rounded-lg border border-gray-300 shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 p-2">
+    </div>
+
+    <!-- Imagen -->
+    <div>
+      <label for="imagen" class="block text-sm font-medium text-gray-700">Imagen (opcional)</label>
+      <input type="file" id="imagen" name="imagen" accept="image/*"
+             class="mt-1 w-full text-gray-700 border border-gray-300 rounded-lg shadow-sm cursor-pointer focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+      <p class="text-xs text-gray-500 mt-1">Formatos permitidos: JPG, PNG, WEBP o GIF.</p>
     </div>
 
     <!-- Botones -->
-    <div class="flex justify-end gap-4">
+    <div class="flex justify-end gap-4 pt-6">
       <a href="{{ url_for('admin.admin_eventos') }}"
-         class="px-4 py-2 rounded-lg border text-gray-600 hover:bg-gray-100">
+         class="px-4 py-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-100 transition">
         ⬅️ Cancelar
       </a>
       <button type="submit"
-              class="px-5 py-2 rounded-lg bg-blue-600 text-white font-semibold hover:bg-blue-700 focus:ring-4 focus:ring-blue-300">
+              class="px-5 py-2 rounded-lg bg-blue-600 text-white font-semibold hover:bg-blue-700 focus:ring-4 focus:ring-blue-300 transition">
         💾 Guardar Evento
       </button>
     </div>

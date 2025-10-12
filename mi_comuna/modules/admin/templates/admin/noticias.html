@@ -1,31 +1,79 @@
 {% extends "admin/base_admin.html" %}
 
-{% block content %}
-<section class="p-6">
-  <div class="flex items-center justify-between mb-6">
-    <h1 class="text-2xl font-bold text-gray-800">📰 Noticias</h1>
-    <a href="{{ url_for('admin.admin_crear_noticia') }}">➕ Crear Noticia</a>
+{% block header %}📰 Noticias{% endblock %}
 
+{% block content %}
+<div class="max-w-6xl mx-auto bg-white p-8 rounded-xl shadow mt-10">
+  <!-- 🔹 Encabezado -->
+  <div class="flex justify-between items-center mb-6">
+    <h1 class="text-2xl font-bold text-gray-800">📰 Noticias</h1>
+    <a href="{{ url_for('admin.crear_noticia') }}"
+       class="bg-blue-600 text-white px-5 py-2 rounded-lg font-semibold hover:bg-blue-700 transition">
+      ➕ Nueva Noticia
+    </a>
   </div>
 
+  <!-- 🔹 Mensajes Flash -->
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      {% for category, message in messages %}
+        <div class="mb-4 px-4 py-3 rounded text-sm
+                    {% if category == 'success' %} bg-green-100 text-green-800
+                    {% elif category == 'warning' %} bg-yellow-100 text-yellow-800
+                    {% elif category == 'danger' %} bg-red-100 text-red-800
+                    {% else %} bg-blue-100 text-blue-800 {% endif %}">
+          {{ message }}
+        </div>
+      {% endfor %}
+    {% endif %}
+  {% endwith %}
+
+  <!-- 🔹 Tabla de Noticias -->
   {% if noticias %}
-    <div class="overflow-x-auto bg-white shadow rounded-lg">
-      <table class="w-full text-sm text-left text-gray-600">
-        <thead class="bg-gray-100 text-gray-700 uppercase text-xs">
+    <div class="overflow-x-auto">
+      <table class="w-full text-left border border-gray-200 rounded-lg overflow-hidden">
+        <thead class="bg-gray-100 text-gray-700 text-sm uppercase">
           <tr>
-            <th class="px-6 py-3">Título</th>
-            <th class="px-6 py-3">Fecha</th>
-            <th class="px-6 py-3">Acciones</th>
+            <th class="px-4 py-3">Imagen</th>
+            <th class="px-4 py-3">Título</th>
+            <th class="px-4 py-3">Fecha</th>
+            <th class="px-4 py-3 text-right">Acciones</th>
           </tr>
         </thead>
-        <tbody>
-          {% for n in noticias %}
-          <tr class="border-b hover:bg-gray-50">
-            <td class="px-6 py-3 font-medium text-gray-900">{{ n.titulo }}</td>
-            <td class="px-6 py-3">{{ n.fecha.strftime('%d-%m-%Y') if n.fecha else '-' }}</td>
-            <td class="px-6 py-3 flex gap-3">
-              <a href="{{ url_for('admin.eliminar_noticia', id=n.id) }}"
-                 class="text-red-600 hover:underline">Eliminar</a>
+        <tbody class="text-gray-800 text-sm">
+          {% for noticia in noticias %}
+          <tr class="border-t hover:bg-gray-50 transition">
+            <!-- Imagen -->
+            <td class="px-4 py-2">
+              {% if noticia.imagen %}
+                <img src="{{ url_for('static', filename=noticia.imagen) }}"
+                     alt="Imagen Noticia"
+                     class="h-12 w-12 object-cover rounded-lg border border-gray-200 shadow-sm">
+              {% else %}
+                <span class="text-gray-400 italic">Sin imagen</span>
+              {% endif %}
+            </td>
+
+            <!-- Título -->
+            <td class="px-4 py-2 font-medium">{{ noticia.titulo }}</td>
+
+            <!-- Fecha -->
+            <td class="px-4 py-2">
+              {{ noticia.fecha.strftime("%d/%m/%Y") }}
+            </td>
+
+            <!-- Acciones -->
+            <td class="px-4 py-2 text-right">
+              <form action="{{ url_for('admin.eliminar_noticia', id=noticia.id) }}"
+                    method="POST"
+                    onsubmit="return confirm('⚠️ ¿Seguro que quieres eliminar esta noticia? Esta acción no se puede deshacer.');"
+                    class="inline">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <button type="submit"
+                        class="text-red-600 hover:text-red-800 font-semibold hover:underline">
+                  🗑 Eliminar
+                </button>
+              </form>
             </td>
           </tr>
           {% endfor %}
@@ -33,9 +81,14 @@
       </table>
     </div>
   {% else %}
-    <div class="bg-white p-8 text-center rounded-lg shadow">
-      <p class="text-gray-500">No hay noticias registradas.</p>
+    <!-- Sin noticias -->
+    <div class="text-center py-10 text-gray-500 italic">
+      <svg class="mx-auto mb-3 h-10 w-10 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M9 17v-6h13M9 5v.01M21 21H3V3h18v18z" />
+      </svg>
+      No hay noticias publicadas todavía.
     </div>
   {% endif %}
-</section>
+</div>
 {% endblock %}

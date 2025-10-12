@@ -2,10 +2,13 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>Panel Admin – {{ config.SITE_NAME if config.SITE_NAME else "Mi Portal Parral" }}</title>
-  <script src="https://cdn.tailwindcss.com"></script>
+  <title>Panel Admin – {{ config.get('SITE_NAME', 'Mi Portal Parral') }}</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- TailwindCSS y AlpineJS -->
+  <script src="https://cdn.tailwindcss.com"></script>
   <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+
   {% block extra_head %}{% endblock %}
 </head>
 <body class="bg-gray-100 h-screen flex flex-col" x-data="{ openSidebar: false }">
@@ -14,20 +17,20 @@
   <div class="flex flex-1 h-full overflow-hidden">
 
     <!-- Sidebar -->
-    <aside 
+    <aside
       class="fixed inset-y-0 left-0 w-64 bg-blue-900 text-white flex flex-col transform transition-transform duration-300 lg:relative lg:translate-x-0"
       :class="openSidebar ? 'translate-x-0' : '-translate-x-full'">
 
-      <!-- Logo / Usuario -->
+      <!-- Encabezado del panel -->
       <div class="p-6 text-center border-b border-blue-700">
         <h1 class="text-lg font-bold">⚙️ Panel Admin</h1>
-        <p class="text-sm text-blue-300">{{ current_user.nombre }}</p>
+        <p class="text-sm text-blue-300 truncate">{{ current_user.nombre or 'Administrador' }}</p>
       </div>
 
       <!-- Navegación -->
       <nav class="flex-1 p-4 space-y-2 text-sm">
-        <a href="{{ url_for('admin.admin_dashboard') }}"
-           class="block px-4 py-2 rounded {% if request.endpoint == 'admin.admin_dashboard' %} bg-blue-700 text-white {% else %} hover:bg-blue-700 {% endif %}">
+        <a href="{{ url_for('admin.dashboard') }}"
+           class="block px-4 py-2 rounded {% if request.endpoint == 'admin.dashboard' %} bg-blue-700 text-white {% else %} hover:bg-blue-700 {% endif %}">
           📊 Dashboard
         </a>
 
@@ -63,19 +66,19 @@
 
     <!-- Contenido principal -->
     <div class="flex-1 flex flex-col overflow-hidden">
-      <!-- Header -->
+      <!-- Header superior -->
       <header class="bg-white shadow px-6 py-4 flex justify-between items-center">
         <div class="flex items-center space-x-3">
-          <!-- Botón hamburguesa (solo móvil) -->
+          <!-- Botón de menú (solo móvil) -->
           <button @click="openSidebar = !openSidebar" class="lg:hidden p-2 rounded-md bg-blue-100 text-blue-800">
             ☰
           </button>
           <h2 class="text-xl font-bold text-gray-800">{% block header %}Panel de Administración{% endblock %}</h2>
         </div>
-        <span class="text-sm text-gray-500">Bienvenido, {{ current_user.nombre }}</span>
+        <span class="text-sm text-gray-500">👤 {{ current_user.nombre or 'Admin' }}</span>
       </header>
 
-      <!-- Flash messages -->
+      <!-- Mensajes flash globales -->
       <div class="px-6 mt-4">
         {% with messages = get_flashed_messages(with_categories=true) %}
           {% if messages %}
@@ -84,7 +87,7 @@
                 <div class="p-3 rounded text-sm
                   {% if category == 'success' %} bg-green-100 text-green-800
                   {% elif category == 'warning' %} bg-yellow-100 text-yellow-800
-                  {% elif category == 'error' %} bg-red-100 text-red-800
+                  {% elif category in ['danger','error'] %} bg-red-100 text-red-800
                   {% else %} bg-gray-100 text-gray-800
                   {% endif %}">
                   {{ message }}
@@ -95,7 +98,7 @@
         {% endwith %}
       </div>
 
-      <!-- Bloque de contenido dinámico -->
+      <!-- Contenido dinámico -->
       <main class="flex-1 overflow-y-auto p-6">
         {% block content %}{% endblock %}
       </main>

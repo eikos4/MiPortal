@@ -1,0 +1,127 @@
+{% extends "base.html" %}
+{% block title %}📢 Noticias de tu Empresa{% endblock %}
+
+{% block content %}
+<section class="min-h-screen bg-gray-50 py-12">
+  <div class="max-w-6xl mx-auto px-6">
+
+    <!-- ENCABEZADO -->
+    <div class="text-center mb-12">
+      <h1 class="text-4xl font-extrabold text-gray-900 tracking-tight mb-2">
+        📰 Panel de Noticias
+      </h1>
+      <p class="text-gray-600 text-sm md:text-base">
+        Publica novedades, comunicados o lanzamientos de tu negocio.
+      </p>
+    </div>
+
+    <!-- MENSAJES FLASH -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <div class="mb-8 space-y-2">
+          {% for category, message in messages %}
+            <div class="rounded-lg px-4 py-3 text-sm font-medium shadow-sm
+                        {% if category == 'success' %}bg-green-50 text-green-700 border border-green-200
+                        {% elif category == 'warning' %}bg-yellow-50 text-yellow-700 border border-yellow-200
+                        {% elif category == 'danger' %}bg-red-50 text-red-700 border border-red-200
+                        {% else %}bg-blue-50 text-blue-700 border border-blue-200{% endif %}">
+              {{ message }}
+            </div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+
+    <!-- FORMULARIO DE NUEVA NOTICIA -->
+    <div class="bg-white border border-gray-200 shadow-sm rounded-2xl p-8 mb-16">
+      <div class="flex items-center justify-between mb-6">
+        <h2 class="text-xl font-bold text-gray-800 flex items-center gap-2">
+          ➕ Crear Nueva Noticia
+        </h2>
+        <span class="text-sm text-gray-400 italic">Todos los campos son obligatorios</span>
+      </div>
+
+      <form method="POST" enctype="multipart/form-data" class="space-y-6">
+        {{ form.hidden_tag() }}
+
+        <!-- Título -->
+        <div>
+          {{ form.titulo.label(class="block text-sm font-semibold text-gray-700 mb-1") }}
+          {{ form.titulo(class="w-full rounded-lg border border-gray-300 px-4 py-2 focus:ring-2 focus:ring-blue-600 focus:border-blue-600") }}
+        </div>
+
+        <!-- Contenido -->
+        <div>
+          {{ form.contenido.label(class="block text-sm font-semibold text-gray-700 mb-1") }}
+          {{ form.contenido(class="w-full rounded-lg border border-gray-300 px-4 py-2 focus:ring-2 focus:ring-blue-600 focus:border-blue-600", rows="4", placeholder="Escribe aquí la noticia...") }}
+        </div>
+
+        <!-- Imagen -->
+        <div>
+          {{ form.imagen.label(class="block text-sm font-semibold text-gray-700 mb-1") }}
+          {{ form.imagen(class="block w-full text-sm text-gray-600 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:font-semibold file:bg-blue-600 file:text-white hover:file:bg-blue-700 cursor-pointer") }}
+          <p class="text-xs text-gray-400 mt-1">Formatos permitidos: JPG, PNG, WEBP (máx. 5 MB)</p>
+        </div>
+
+        <!-- BOTÓN -->
+        <div class="text-right">
+          {{ form.submit(class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-2.5 rounded-lg shadow transition-all") }}
+        </div>
+      </form>
+    </div>
+
+    <!-- LISTADO DE NOTICIAS -->
+    <div>
+      <h2 class="text-2xl font-extrabold text-gray-900 mb-8">📋 Mis Noticias Publicadas</h2>
+
+      {% if noticias %}
+        <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
+          {% for n in noticias %}
+            <article class="group bg-white border border-gray-200 rounded-2xl shadow-sm hover:shadow-lg transition overflow-hidden flex flex-col">
+              <!-- Imagen -->
+              <div class="aspect-video bg-gray-100 overflow-hidden">
+                {% if n.imagen %}
+                  <img src="{{ url_for('static', filename=n.imagen) }}"
+                       alt="{{ n.titulo }}"
+                       class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                {% else %}
+                  <div class="h-full flex items-center justify-center text-gray-400 text-sm">
+                    📷 Sin imagen
+                  </div>
+                {% endif %}
+              </div>
+
+              <!-- Contenido -->
+              <div class="p-6 flex flex-col flex-1">
+                <h3 class="text-lg font-bold text-gray-900 mb-1 line-clamp-1">{{ n.titulo }}</h3>
+                <p class="text-sm text-gray-600 flex-1 line-clamp-3">{{ n.contenido }}</p>
+
+                <p class="text-xs text-gray-400 mt-3">
+                  📅 {{ n.fecha_publicacion.strftime("%d/%m/%Y") if n.fecha_publicacion else "Sin fecha" }}
+                </p>
+
+                <form method="POST"
+                      action="{{ url_for('ciudadano.eliminar_noticia', id=n.id) }}"
+                      onsubmit="return confirm('¿Eliminar esta noticia?');"
+                      class="mt-4">
+                  {{ csrf_token() }}
+                  <button type="submit"
+                          class="w-full bg-red-600 hover:bg-red-700 text-white text-sm font-semibold py-2 rounded-lg shadow transition">
+                    🗑 Eliminar
+                  </button>
+                </form>
+              </div>
+            </article>
+          {% endfor %}
+        </div>
+      {% else %}
+        <div class="text-center bg-white border rounded-2xl p-16 shadow-sm">
+          <p class="text-gray-500 text-lg">⚠️ Aún no has publicado ninguna noticia.</p>
+          <p class="text-gray-400 text-sm mt-1">Publica la primera y destaca tu negocio en el portal.</p>
+        </div>
+      {% endif %}
+    </div>
+
+  </div>
+</section>
+{% endblock %}

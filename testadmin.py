@@ -4,14 +4,13 @@ from mi_comuna.modules.auth.models import Usuario
 
 app = create_app()
 with app.app_context():
-    # Crear usuario admin
-    admin = Usuario(
-        nombre="Administrador",
-        email="admin@parral.cl",
-        rol="admin"
-    )
-    admin.set_password("123456")  # 👈 usamos tu método set_password
-    
-    db.session.add(admin)
-    db.session.commit()
-    print("✅ Usuario admin creado: admin@parral.cl / 123456")
+    nombre = input("Nombre admin: ") or "Admin"
+    email = input("Correo admin: ") or "admin@miportal.cl"
+    password = input("Password admin: ") or "admin123"
+    if Usuario.query.filter_by(email=email.lower()).first():
+        print("⚠️ Ya existe ese correo.")
+    else:
+        u = Usuario(nombre=nombre, email=email.lower(), rol="admin")
+        u.set_password(password)
+        db.session.add(u); db.session.commit()
+        print("✅ Admin creado.")

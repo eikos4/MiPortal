@@ -1,0 +1,135 @@
+{% extends "base.html" %}
+{% block title %}Gestión de Eventos{% endblock %}
+
+{% block content %}
+<section class="py-12 bg-gray-50 min-h-screen">
+  <div class="max-w-5xl mx-auto px-6">
+
+    <!-- Título -->
+    <div class="mb-10 text-center">
+      <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900">
+        🎉 Gestión de Eventos
+      </h1>
+      <p class="text-gray-600 mt-2">Crea, administra y elimina los eventos de tu negocio.</p>
+    </div>
+
+    <!-- Mensajes flash -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <div class="mb-6 space-y-2">
+          {% for category, message in messages %}
+            <div class="p-3 rounded text-sm
+              {% if category == 'success' %} bg-green-100 text-green-800
+              {% elif category == 'warning' %} bg-yellow-100 text-yellow-800
+              {% elif category == 'danger' %} bg-red-100 text-red-800
+              {% else %} bg-blue-100 text-blue-800 {% endif %}">
+              {{ message }}
+            </div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+
+    <!-- Formulario -->
+    <div class="bg-white shadow rounded-2xl p-8 mb-12 border border-gray-200">
+      <h2 class="text-xl font-bold text-gray-800 mb-6">➕ Crear nuevo evento</h2>
+      <form method="POST" enctype="multipart/form-data" class="space-y-6">
+        {{ form.hidden_tag() }}
+
+        <!-- Título -->
+        <div>
+          {{ form.titulo.label(class="block text-sm font-semibold text-gray-700 mb-1") }}
+          {{ form.titulo(class="w-full rounded-lg border px-3 py-2 focus:ring-2 focus:ring-blue-500") }}
+        </div>
+
+        <!-- Descripción -->
+        <div>
+          {{ form.descripcion.label(class="block text-sm font-semibold text-gray-700 mb-1") }}
+          {{ form.descripcion(class="w-full rounded-lg border px-3 py-2 focus:ring-2 focus:ring-blue-500 h-24") }}
+        </div>
+
+        <!-- Fechas -->
+        <div class="grid md:grid-cols-2 gap-6">
+          <div>
+            {{ form.fecha_inicio.label(class="block text-sm font-semibold text-gray-700 mb-1") }}
+            {{ form.fecha_inicio(class="w-full rounded-lg border px-3 py-2 focus:ring-2 focus:ring-blue-500") }}
+          </div>
+          <div>
+            {{ form.fecha_fin.label(class="block text-sm font-semibold text-gray-700 mb-1") }}
+            {{ form.fecha_fin(class="w-full rounded-lg border px-3 py-2 focus:ring-2 focus:ring-blue-500") }}
+          </div>
+        </div>
+
+        <!-- Lugar -->
+        <div>
+          {{ form.lugar.label(class="block text-sm font-semibold text-gray-700 mb-1") }}
+          {{ form.lugar(class="w-full rounded-lg border px-3 py-2 focus:ring-2 focus:ring-blue-500") }}
+        </div>
+
+        <!-- Imagen -->
+        <div>
+          {{ form.imagen.label(class="block text-sm font-semibold text-gray-700 mb-1") }}
+          {{ form.imagen(class="block w-full text-sm text-gray-600 file:mr-4 file:py-2 file:px-4
+                                file:rounded-lg file:border-0
+                                file:text-sm file:font-semibold
+                                file:bg-blue-600 file:text-white
+                                hover:file:bg-blue-700 cursor-pointer") }}
+        </div>
+
+        <!-- Botón -->
+        <div class="text-right">
+          {{ form.submit(class="px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg shadow transition") }}
+        </div>
+      </form>
+    </div>
+
+    <!-- Listado de Eventos -->
+    <div>
+      <h2 class="text-2xl font-bold text-gray-900 mb-6">📋 Mis Eventos Publicados</h2>
+
+      {% if eventos %}
+        <div class="grid gap-6 md:grid-cols-2">
+          {% for evento in eventos %}
+            <div class="bg-white border border-gray-200 rounded-xl shadow p-5 flex flex-col justify-between hover:shadow-lg transition">
+              
+              <!-- Imagen -->
+              {% if evento.imagen %}
+                <img src="{{ url_for('static', filename=evento.imagen) }}" 
+                     alt="{{ evento.titulo }}" 
+                     class="w-full h-40 object-cover rounded-lg mb-4">
+              {% endif %}
+
+              <!-- Contenido -->
+              <h3 class="text-lg font-bold text-gray-800">{{ evento.titulo }}</h3>
+              <p class="text-gray-600 text-sm mt-2 line-clamp-4">{{ evento.descripcion }}</p>
+
+              <div class="mt-3 text-sm text-gray-500">
+                📍 {{ evento.lugar or "Lugar no especificado" }}
+              </div>
+              <div class="text-xs text-gray-400">
+                🗓 Desde {{ evento.fecha_inicio.strftime("%d/%m/%Y") if evento.fecha_inicio else "?" }}
+                {% if evento.fecha_fin %} hasta {{ evento.fecha_fin.strftime("%d/%m/%Y") }}{% endif %}
+              </div>
+
+              <!-- Acciones -->
+              <form method="POST"
+                    action="{{ url_for('ciudadano.eliminar_evento', id=evento.id) }}"
+                    class="mt-4"
+                    onsubmit="return confirm('¿Seguro que deseas eliminar este evento?');">
+                {{ csrf_token() }}
+                <button type="submit"
+                        class="w-full bg-red-600 hover:bg-red-700 text-white font-semibold py-2 rounded-lg shadow-md transition">
+                  🗑 Eliminar
+                </button>
+              </form>
+            </div>
+          {% endfor %}
+        </div>
+      {% else %}
+        <p class="text-gray-500 italic">⚠️ Aún no has publicado eventos.</p>
+      {% endif %}
+    </div>
+
+  </div>
+</section>
+{% endblock %}

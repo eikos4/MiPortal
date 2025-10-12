@@ -1,24 +1,64 @@
 {% extends "admin/base_admin.html" %}
 
 {% block content %}
-<section class="max-w-3xl mx-auto bg-white shadow rounded-lg p-6 mt-6">
-  <h1 class="text-xl font-bold text-gray-800 mb-4">➕ Crear Noticia</h1>
+<section class="max-w-3xl mx-auto bg-white shadow rounded-lg p-8 mt-8">
+  <h1 class="text-2xl font-bold text-gray-800 mb-6">📰 Crear nueva noticia</h1>
 
-  <form method="POST" class="space-y-4">
+  <!-- 🔹 Mensajes flash -->
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      {% for category, message in messages %}
+        <div class="mb-4 px-4 py-3 rounded text-sm
+                    {% if category == 'success' %} bg-green-100 text-green-800
+                    {% elif category == 'warning' %} bg-yellow-100 text-yellow-800
+                    {% elif category == 'danger' %} bg-red-100 text-red-800
+                    {% else %} bg-blue-100 text-blue-800 {% endif %}">
+          {{ message }}
+        </div>
+      {% endfor %}
+    {% endif %}
+  {% endwith %}
+
+  <!-- 🔹 Formulario -->
+  <form method="POST" enctype="multipart/form-data" class="space-y-6">
+    <!-- CSRF Token -->
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+    <!-- Título -->
     <div>
-      <label class="block text-sm font-medium text-gray-700">Título</label>
-      <input type="text" name="titulo" required
-             class="mt-1 block w-full border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500">
+      <label for="titulo" class="block text-sm font-medium text-gray-700">Título</label>
+      <input id="titulo" type="text" name="titulo" required
+             placeholder="Título de la noticia"
+             class="mt-1 block w-full border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 px-3 py-2">
     </div>
 
+    <!-- Contenido -->
     <div>
-      <label class="block text-sm font-medium text-gray-700">Contenido</label>
-      <textarea name="contenido" rows="6" required
-                class="mt-1 block w-full border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500"></textarea>
+      <label for="contenido" class="block text-sm font-medium text-gray-700">Contenido</label>
+      <textarea id="contenido" name="contenido" rows="8" required
+                placeholder="Escribe aquí el contenido completo de la noticia..."
+                class="mt-1 block w-full border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 px-3 py-2"></textarea>
     </div>
 
-    <button type="submit"
-            class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Guardar</button>
+    <!-- Imagen -->
+    <div>
+      <label for="imagen" class="block text-sm font-medium text-gray-700">Imagen (opcional)</label>
+      <input id="imagen" type="file" name="imagen" accept="image/*"
+             class="mt-1 block w-full text-gray-700 border border-gray-300 rounded-lg shadow-sm cursor-pointer focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+      <p class="text-xs text-gray-500 mt-1">Formatos permitidos: JPG, PNG, WEBP, GIF.</p>
+    </div>
+
+    <!-- Botones -->
+    <div class="flex justify-end gap-4 mt-6">
+      <a href="{{ url_for('admin.admin_noticias') }}"
+         class="px-4 py-2 rounded-lg border border-gray-300 text-gray-600 hover:bg-gray-100 transition">
+        ⬅️ Cancelar
+      </a>
+      <button type="submit"
+              class="px-5 py-2 rounded-lg bg-blue-600 text-white font-semibold hover:bg-blue-700 focus:ring-4 focus:ring-blue-300 transition">
+        💾 Guardar noticia
+      </button>
+    </div>
   </form>
 </section>
 {% endblock %}
